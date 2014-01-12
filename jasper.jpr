@@ -1,0 +1,43 @@
+(= list Array)
+
+(= (get macs 'mac) (def mac (name 'argsnbody)
+		      (list '= (list 'get 'macs (list '"'" name))
+			    ((. (list 'def name) concat) argsnbody))))
+
+(def cat (a b)
+  ((. (slice a) concat) b))
+
+(mac strmac (name 'body)
+  (list '= (list 'get 'strmacs (list '"'" name)) (cat (list 'def name) body)))
+
+(def alist (x)
+  (is (. x constructor) list))
+
+(def apply (f args)
+  ((. f apply) null args))
+
+(strmac if (cond then elseclause)
+  (apply + (dmap1 (def an x (macex strmacs x))
+                  (list '"if (" cond '") {\n" then '";\n} else {\n"
+                        elseclause '";\n}\n"))))
+
+(def dmap1 (f xs)
+  (for (var= i 0) (< i (. xs length)) (++ i)
+       (= (get xs i) (f (get xs i))))
+  xs)
+
+(mac ` (a)
+  (if (alist a)
+      (if (is (get a 0) ',)
+	  (get a 1)
+	  (cat '(list) (dmap1 ` a)))
+      (quote a)))
+
+(mac zap (f place 'args)
+  `(= ,place ,(cat (list f) args)))
+
+(= doeval false)
+
+((. console log) '"/* no comment */")
+
+(alert 3)
