@@ -1,4 +1,4 @@
-fs = require("fs");
+var fs = require("fs");
 
 var jj = "" + fs.readFileSync("jasperjs.js");
 
@@ -15,14 +15,12 @@ process.stdin.on("data", function (data) {
 process.stdin.on("end", function () {
     console.log(jj);
     var code = JSON.parse(input)
-    var res = []
-    for (var i = 0; i < code.length; i++) {
-	var foo = macex(macs, code[i]);
-	//console.log(foo);
-	res = macex(strmacs, foo);
-	console.log(res)
+    for (var index = 0; index < code.length; index++) {
+	var foo____ = macex(macs, code[index]);
+	var res____ = rendst(foo____);
+	console.log(res____)
 	if (doeval) {
-	    eval(res);
+	    eval(res____);
 	}
     }
 });

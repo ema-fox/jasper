@@ -2,12 +2,43 @@ function slice (a, b, c) {
     return [].slice.call(a, b, c)
 }
 
-var reps = {"<": "_lt", "+": "_p", "=": "_eq", "`": "_qq", "|": "_pipe", "_": "__"};
+function join (xs, y) {
+    if (xs.length > 0) {
+	res = xs[0];
+	for (var i = 1; i < xs.length; i++) {
+	    res = res + y + xs[i];
+	}
+	return res
+    }
+    return ""
+}
+
+function sfy (x) {
+    if (!x)
+	x = "";
+    if (x.constructor === Array) {
+	return "(" + join(x.map(sfy),  " ") + ")"
+    } else if (x.constructor === Object) {
+	return "a(" + join(slice(x).map(sfy),  " ") + ")"
+    } else {
+	return x.toString()
+    }
+}
+
+function dbg (y, x) {
+    console.warn(sfy(y), sfy(x));
+    return x
+}
+
+var reps = {"<": "_lt", "+": "_p", "=": "_eq", "`": "_qq", "|": "_pipe", "*": "_st", "_": "__"};
 var wholereps = {"if": "_if"};
 
 function munge (x) {
-    if (x.constructor != String || x[0] == "\"") {
+    if (x.constructor !== String || x[0] == "\"") {
 	return x
+    }
+    if (wholereps.hasOwnProperty(x)) {
+	return wholereps[x]
     }
     res = "";
     for (var i = 0; i < x.length; i++) {
@@ -18,41 +49,69 @@ function munge (x) {
 	    res = res + x[i];
 	}
     }
-    rep = wholereps[x];
-    if (rep) {
-	return rep
-    }
     return res
 }
 
-function emptymac (x) {return slice(arguments, 0)}
-
 function def (name, args) {
-    var body = ["returnmac", ["do"].concat(slice(arguments, 2, arguments.length))];
-    if (args[args.length - 1][0] == "'") {
-	body = ["do", ["var=", args[args.length - 1][1],
-		       ["slice", "arguments", args.length - 1]],
-		body];
-	args = args.slice(0, args.length - 1);
+    var body = slice(arguments, 2);
+    var pre = []
+    for (var i = 0; i < args.length; i++) {
+	if (args[i].constructor === Array) {
+	    if (args[i][0] == "'") {
+		pre.push(["var=", args[i][1],
+			  ["slice", "arguments", i,
+			   ["-", [".", "arguments", "length"],
+			    args.length - i - 1]]]);
+	    } else {
+		for (var j = 0; j < args[i].length; j++) {
+		    pre.push(["var=", args[i][j],
+			       ["get", ["get", "arguments", i], j]])
+		}
+	    }
+	    args[i] = "_nusd";
+	}
     }
-    return ["rawdef", name, args, body]
+    return ["rawdef", name, args,
+	    ["returnmac", ["do"].concat(pre).concat(body)]]
 }
 
 function returnmac (a) {
     a = macex(macs, a);
     if (a.constructor == Array) {
-	if (a[0] == "do") {
+	if (a[0] == "block") {
 	    var res = slice(a);
 	    res[res.length - 1] = ["returnmac", res[res.length - 1]]
 	    return res
-	} else if (a[0] == "if") {
-	    return ["if", a[1], ["returnmac", a[2]], ["returnmac", a[3]]]
+	} else if (a[0] == "rawif") {
+	    return ["rawif", a[1], ["returnmac", a[2]], ["returnmac", a[3]]]
 	}
     }
     return ["return", a]
 }
 
-var macs = {"def": def, "returnmac": returnmac};
+function dom () {
+    var res = ["block"];
+    for (var i = 0; i < arguments.length; i++) {
+	if (arguments[i][0] == "do") {
+	    res.concat(slice(arguments[i], 1));
+	} else {
+	    res.push(arguments[i]);
+	}
+    }
+    return res
+}
+
+function ifmac () {
+    if (arguments.length === 2) {
+	return ["rawif"].concat(slice(arguments), ["null"])
+    } else if (arguments.length === 3) {
+	return ["rawif"].concat(slice(arguments))
+    } else {
+	return ["rawif", arguments[0], arguments[1], ifmac.apply(null, slice(arguments, 2))]
+    }
+}
+
+var macs = {"if": ifmac, "def": def, "returnmac": returnmac, "do": dom, "symmacs": {}};
 
 function _p (a) {
     return (a !== undefined) ? a + _p.apply(null, slice(arguments, 1)) : 0
@@ -65,76 +124,134 @@ function sp (a) {
 function block () {
     var res = "{\n";
     for (var i = 0; i < arguments.length; i++) {
-	res = sp("", res, macex(strmacs, arguments[i]), ";\n");
+	res = sp(res, rendst(arguments[i]).replace(/^(.)/mg, "    $1"));
+	// do not replace on last line
     }
     return res + "}\n"
 }
 
-function arglist (code) {
-    var res = "(";
+function rendexl (code) {
+    var l = []
     for (var i = 0; i < code.length; i++) {
-	res = sp(res, macex(strmacs, munge(code[i])), (i < code.length - 1? ", " : ""));
+	l.push(rendex(code[i]));
     }
-    return res + ")"
+    return l
+}
+
+function arglist (code) {
+    return "(" + join(rendexl(code), ", ") + ")"
 }
 
 function rawdef (name, args, body) {
     return sp("function ", munge(name), " ", arglist(args), " ", block(body))
 }
 
-function forloop (a, b, c) {
-    return "for (" + macex(strmacs, a) + "; " + macex(strmacs, b) + "; " +
-	macex(strmacs, c) + ") " + block.apply(null, slice(arguments, 3))
+function expdef (name, args, body) {
+    return "(" + rawdef(name, args, body) + ")"
 }
 
-function funcall (name) {
-    return name + arglist(slice(arguments, 1))
+function rawif (cond, then, elseclause) {
+    return "if (" + rendex(cond) + ")" + block(then) + " else " + block(elseclause)
+}
+
+function forloop (a, b, c) {
+    return "for (" + rendst(a) + rendex(b) + "; " +
+	rendex(c) + ") " + block.apply(null, slice(arguments, 3))
+}
+
+function funcall (name, args) {
+    return rendex(name) + arglist(args)
 }
 
 function vareq (name, val) {
-    return "var " + name + " = " + macex(strmacs, val)
-}
-
-function plus (a, b) {
-    return a ? macex(strmacs, a) + (b ? " + " + plus.apply(null, slice(arguments, 1)) : "") : "0"
-}
-
-function eq (a, b) {
-    if(b[0] == "r")
-	throw new Error(b)
-    return macex(strmacs, a) + " = " + macex(strmacs, b)
+    return "var " + name + " = " + rendex(val) + ";\n"
 }
 
 function get (a, b) {
-    return macex(strmacs, a) + "[" + macex(strmacs, b) + "]"
+    return rendex(a) + "[" + rendex(b) + "]"
 }
 
 function quote (a) {
     return JSON.stringify(a)
 }
 
-var strmacs = {"rawdef": rawdef, "do": block, "macnotfound": funcall, "for": forloop, "var=": vareq,
-	       "=": eq, "get": get, "+": plus, "'": quote}
+function pp (a) {
+    return "++" + rendex(a)
+}
 
-infixops = [".", "<"];
+var strenderers = {"rawdef": rawdef, "block": block, "for": forloop,
+		    "var=": vareq, "rawif": rawif};
+
+var exprenderers = {"get": get, "rawdef": expdef, "'": quote, "++": pp}
+
+function makeciop (name, op, id) {
+    if (!op) {
+	op = name
+    }
+    exprenderers[name] = function (a) {
+	return a ? join(rendexl(arguments), op) : id
+    };
+}
+
+makeciop(".");
+makeciop("+", " + ", "0")
+makeciop("%", " % ", "0")
+makeciop("/", " / ", "1")
+makeciop("-", " - ", "0")
+makeciop("and", " && ", "true")
+
+var infixops = ["<", "="];
 
 function makeinfixop (name, op) {
     if (!op) {
 	op = name
     }
-    strmacs[name] = function (a, b) {
-	return macex(strmacs, a) + op + macex(strmacs, b)
+    exprenderers[name] = function (a, b) {
+	return rendex(a) + op + rendex(b)
     };
 }
 
 makeinfixop("is", "===");
+makeinfixop("iso", "==");
 
 for (var i = 0; i < infixops.length; i++) {
     makeinfixop(infixops[i]);
 }
 
-function macex (macs, code) {
+function rendex (code) {
     if (code.constructor === Array) {
+	if (code.length > 0) {
+	    renderer = exprenderers[code[0]];
+	    if (renderer) {
+		return renderer.apply(null, slice(code, 1))
+	    } else {
+		return funcall(code[0], slice(code, 1))
+	    }
+	} else {
+	    return "[]"
+	}
+    } else if (code.constructor === String) {
+	return munge(code.toString())
+    } else {
+	return (code)
+    }
+}
+
+function rendst (code) {
+    if (code.constructor === Array && code[0]) {
+	renderer = strenderers[code[0]];
+	if (renderer) {
+	    return renderer.apply(null, code.slice(1))
+	} else {
+	    return rendex(code) + ";\n"
+	}
+    } else {
+	return rendex(code) + ";\n"
+    }
+}
+
+function macex (macs, code) {
+    if (code.constructor === Array && code[0]) {
 	code[0] = macex(macs, code[0]);
 	var mac = macs[code[0]];
 	if (mac) {
@@ -152,10 +269,15 @@ function macex (macs, code) {
 	    return code
 	}
     } else {
+	if (code.constructor === String) {
+	    var mac = macs["symmacs"][code];
+	    if (mac) {
+		return mac(code)
+	    }
+	} 
 	if (code.constructor !== String && code.constructor !== Number) {
-	    throw new Error("not a string: " + JSON.stringify(arguments[i]))
+	    //throw new Error("not a string: " + JSON.stringify(arguments[i]))
 	}
 	return code
     }
 }
-
