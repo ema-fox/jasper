@@ -1,14 +1,16 @@
-(= list Array)
+(assign list Array)
 
-(= (get macs 'mac) (def mac (name 'argsnbody)
-		      (list '= (list 'get 'macs (list '"'" name))
-			    ((. (list 'def name) concat) argsnbody))))
+(assign slice (fun slice (xs start end)
+		   (().slice.call xs start end)))
+
+(assign-mac mac (fun mac (name 'argsnbody)
+		     (list 'assign-mac name ((list 'fun name).concat argsnbody))))
+
+(mac def (name 'argsnbody)
+  (list 'assign name ((list 'fun name).concat argsnbody)))
 
 (def cat ('xs)
   (().concat.apply () xs))
-
-(mac strender (name 'body)
-  (list '= (list 'get 'strenderers (list '"'" name)) (cat (list 'def name) body)))
 
 (def alist (x)
   (is x.constructor list))
@@ -30,14 +32,17 @@
   (if (is xss.length 1)
       (map1 f (get xss 0))
       (do
-	(var= length (apply Math.min (map1 (def "" (x) x.length) xss)))
+	(var= length (apply Math.min (map1 (fun "" (x) x.length) xss)))
 	(var= ys ())
 	(for (var= i 0) (< i length) (++ i)
-	     (ys.push (apply f (map1 (def "" (x) (get x i)) xss))))
+	     (ys.push (apply f (map1 (fun "" (x) (get x i)) xss))))
 	ys)))
 
 (def mapcat (f 'xss)
   (apply cat (apply map f xss)))
+
+(def quote (a)
+  (JSON.stringify a))
 
 (def runqq (a)
   (if (alist a)
@@ -52,19 +57,21 @@
     (list 'get (runqq a) 0))
 
 (mac fn (args 'body)
-  `(def "" ,args ,@body))
+  `(fun "" ,args ,@body))
 
 (mac when (cond 'body)
   `(if ,cond (do ,@body)))
 
-(def assoc (o k v)
+'(def assoc (o k v)
   (var= o2 (Object.create o))
   (= (get o2 k) v)
   o2)
 
 (mac each (i v xs 'body)
-  (var= tmpmacs (assoc macs 'symmacs (assoc (get macs 'symmacs) v (fn (x)
-								    `(get ,xs ,i)))))
+  (var= tmpmacs (Object))
+  (= tmpmacs.symmacs (Object))
+  (= (get tmpmacs.symmacs v) (fn (x)
+		       `(get ,xs ,i)))
   `(for (var= ,i 0) (< ,i (, xs).length) (++ ,i)
 	,(macex tmpmacs `(do ,@body))))
 

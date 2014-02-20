@@ -52,7 +52,7 @@ function munge (x) {
     return res
 }
 
-function def (name, args) {
+function fun (name, args) {
     var body = slice(arguments, 2);
     var pre = []
     for (var i = 0; i < args.length; i++) {
@@ -71,7 +71,7 @@ function def (name, args) {
 	    args[i] = "_nusd";
 	}
     }
-    return ["rawdef", name, args,
+    return ["rawfun", name, args,
 	    ["returnmac", ["do"].concat(pre).concat(body)]]
 }
 
@@ -111,20 +111,20 @@ function ifmac () {
     }
 }
 
-var macs = {"if": ifmac, "def": def, "returnmac": returnmac, "do": dom, "symmacs": {}};
+var macs = {"if": ifmac, "fun": fun, "returnmac": returnmac, "do": dom, "symmacs": {}};
 
 function _p (a) {
     return (a !== undefined) ? a + _p.apply(null, slice(arguments, 1)) : 0
 }
 
-function sp (a) {
-    return (a !== undefined) ? a + sp.apply(null, slice(arguments, 1)) : ""
+function str (a) {
+    return (a !== undefined) ? a + str.apply(null, slice(arguments, 1)) : ""
 }
 
 function block () {
     var res = "{\n";
     for (var i = 0; i < arguments.length; i++) {
-	res = sp(res, rendst(arguments[i]).replace(/^(.)/mg, "    $1"));
+	res = str(res, rendst(arguments[i]).replace(/^(.)/mg, "    $1"));
 	// do not replace on last line
     }
     return res + "}\n"
@@ -142,12 +142,8 @@ function arglist (code) {
     return "(" + join(rendexl(code), ", ") + ")"
 }
 
-function rawdef (name, args, body) {
-    return sp("function ", munge(name), " ", arglist(args), " ", block(body))
-}
-
-function expdef (name, args, body) {
-    return "(" + rawdef(name, args, body) + ")"
+function rawfun (name, args, body) {
+    return str("(function ", munge(name), " ", arglist(args), " ", block(body), ")")
 }
 
 function rawif (cond, then, elseclause) {
@@ -179,10 +175,10 @@ function pp (a) {
     return "++" + rendex(a)
 }
 
-var strenderers = {"rawdef": rawdef, "block": block, "for": forloop,
-		    "var=": vareq, "rawif": rawif};
+var strenderers = {"block": block, "for": forloop,
+		    "var=": vareq, "rawif": rawif, "assign": vareq};
 
-var exprenderers = {"get": get, "rawdef": expdef, "'": quote, "++": pp}
+var exprenderers = {"get": get, "rawfun": rawfun, "'": quote, "++": pp}
 
 function makeciop (name, op, id) {
     if (!op) {
@@ -257,10 +253,6 @@ function macex (macs, code) {
 	if (mac) {
 	    return macex(macs, mac.apply(null, code.slice(1)))
 	} else {
-	    mac = macs["macnotfound"];
-	    if (mac) {
-		code = mac.apply(null, code);
-	    }
 	    if (code.constructor == Array) {
 		for (var i = 1; i < code.length; i++) {
 		    code[i] = macex(macs, code[i]);
@@ -281,3 +273,7 @@ function macex (macs, code) {
 	return code
     }
 }
+
+exports.macex = macex;
+exports.rendst = rendst;
+exports.macs = macs;
