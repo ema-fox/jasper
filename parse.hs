@@ -3,13 +3,15 @@ import Text.JSON
 import Text.ParserCombinators.Parsec hiding (spaces, space)
 import Control.Applicative ((<*), (*>))
 
-jsstr = JSString . toJSString
-
 escaped = char '\\' >> char 'n' >> return '\n'
 
-stringp = fmap jsstr $ between (char '"') (char '"') $ many $ escaped <|> noneOf "\""
+stringp = fmap showJSON $ between (char '"') (char '"') $ many $ escaped <|> noneOf "\""
 
-symbol = fmap jsstr $ (many1 $ oneOf $ ['a'..'z'] ++ ['A'..'Z'] ++ "/%-|$<>_*+=" ++ ['0'..'9']) <|> (many1 $ char '.')
+symbolBegin = letter <|> oneOf "/%-|$<>_*+="
+
+symbol = fmap showJSON $ (symbolBegin >>= \x -> fmap (x:) (many $ symbolBegin <|> digit)) <|> (many1 $ char '.')
+
+number = fmap (showJSON . (read :: String -> Double) . concat ) $ sequence [(option "" $ string "-"), many1 digit, option "" $ string ".", many digit]
 
 sepBy2 p sep = do
        car <- p
@@ -17,18 +19,18 @@ sepBy2 p sep = do
        cdr <- sepBy1 p sep
        return (car:cdr)
 
-dottedExpression = fmap (\x -> JSArray (jsstr ".":x)) $ expression `sepBy2` char '.'
+dottedExpression = fmap (\x -> showJSON (showJSON ".":x)) $ expression `sepBy2` char '.'
 
-foo start x = JSArray $ (jsstr start):x
+foo start x = showJSON $ (showJSON start):x
 
 startSepEndBy1 p sep = sep *> sepEndBy1 p sep
 startSepEndBy p sep = sep *> sepEndBy p sep
 
-list = fmap JSArray $ between (char '(') (char ')') $ expression2 `startSepEndBy` sep
+list = fmap showJSON $ between (char '(') (char ')') $ expression2 `startSepEndBy` sep
 
-modifer c = (try $ fmap (foo c . (:[])) $ (string c) *> expression2) <|> (try $ fmap jsstr (string c))
+modifer c = (try $ fmap (foo c . (:[])) $ (string c) *> expression2) <|> (try $ fmap showJSON (string c))
 
-expression = symbol <|> list <|> stringp <|> modifer "'" <|> modifer "`" <|> modifer ",@" <|> modifer ","
+expression = try number <|> symbol <|> list <|> stringp <|> modifer "'" <|> modifer "`" <|> modifer ",@" <|> modifer ","
 
 expression2 = try dottedExpression <|> expression
 
