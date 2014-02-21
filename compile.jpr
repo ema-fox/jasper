@@ -2,7 +2,8 @@
 
 (assign lib (require '"./jasperjs"))
 
-(assign env (list (list 'macex lib.macex)))
+(assign env (list (list 'macex lib.macex)
+		  (list 'require require)))
 
 (def eval-with (code env)
   (apply (Function (map (fn ((name _)) name) env)
