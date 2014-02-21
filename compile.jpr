@@ -1,0 +1,30 @@
+(assign fs (require 'fs))
+
+(assign lib (require '"./jasperjs"))
+
+(assign env (list (list 'macex lib.macex)))
+
+(def eval-with (code env)
+  (apply (Function (map (fn ((name _)) name) env)
+		   code)
+	 (map (fn ((_ val)) val) env)))
+
+(var= input '"")
+
+(callback (process.stdin.on 'data) (data)
+	  (zap + input data))
+
+(callback (process.stdin.on 'end) ()
+  (var= code (JSON.parse input))
+  (each i bar code
+    (var= foo (lib.macex lib.macs bar))
+    (if (is (get foo 0) 'assign)
+      (do
+	(env.push (list (get foo 1)
+			(eval-with (lib.rendst (list 'return (get foo 2))) env)))
+	(prn (lib.rendst foo)))
+      (is (get foo 0) 'assign-mac)
+      (= (get lib.macs (get foo 1))
+	 (eval-with (lib.rendst (list 'return (get foo 2))) env))
+      (prn (lib.rendst foo))))
+  null)
