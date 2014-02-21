@@ -2,7 +2,7 @@ var fs = require("fs");
 
 var lib = require("./jasperjs")
 
-var env = {"macex": lib.macex};
+var env = {"macex": lib.macex, "require": require};
 
 var input = ""
 

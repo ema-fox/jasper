@@ -1,3 +1,9 @@
+var gensymCounter = 0;
+
+function gensym (prefix) {
+    return (prefix ? prefix : "") + "_g" + gensymCounter++
+}
+
 function slice (a, b, c) {
     return [].slice.call(a, b, c)
 }
@@ -15,7 +21,7 @@ function join (xs, y) {
 
 function sfy (x) {
     if (!x)
-	x = "";
+	return "" + x
     if (x.constructor === Array) {
 	return "(" + join(x.map(sfy),  " ") + ")"
     } else if (x.constructor === Object) {
@@ -30,7 +36,7 @@ function dbg (y, x) {
     return x
 }
 
-var reps = {"<": "_lt", "+": "_p", "=": "_eq", "`": "_qq", "|": "_pipe", "*": "_st", "_": "__"};
+var reps = {"<": "_lt", "+": "_p", "=": "_eq", "`": "_qq", "|": "_pipe", "*": "_st", "-": "_d", "_": "__"};
 var wholereps = {"if": "_if"};
 
 function munge (x) {
@@ -55,20 +61,45 @@ function munge (x) {
 function fun (name, args) {
     var body = slice(arguments, 2);
     var pre = []
+    function addArg (name, val) {
+	pre.push(["var=", name, val]);
+    }
+    var restArgIndex = false;
+    var restArg;
+    var afterArgs;
+    for (var i = 0; i < args.length; i++) {
+	if (args[i].constructor === Array && args[i][0] === "'") {
+	    restArgIndex = i;
+	}
+    }
+    if (restArgIndex !== false) {
+	restArg = args[restArgIndex][1];
+	afterArgs = slice(args, restArgIndex + 1, args.length);
+	args = slice(args, 0, restArgIndex);
+    }
     for (var i = 0; i < args.length; i++) {
 	if (args[i].constructor === Array) {
-	    if (args[i][0] == "'") {
-		pre.push(["var=", args[i][1],
-			  ["slice", "arguments", i,
-			   ["-", [".", "arguments", "length"],
-			    args.length - i - 1]]]);
-	    } else {
-		for (var j = 0; j < args[i].length; j++) {
-		    pre.push(["var=", args[i][j],
-			       ["get", ["get", "arguments", i], j]])
-		}
+	    var arg = gensym();
+	    for (var j = 0; j < args[i].length; j++) {
+		addArg(args[i][j], ["get", arg, j]);
 	    }
-	    args[i] = "_nusd";
+	    args[i] = arg;
+	}
+    }
+    if (restArgIndex !== false) {
+	addArg(restArg,
+	       ["slice", "arguments", restArgIndex,
+		["-", [".", "arguments", "length"], afterArgs.length]]);
+	for (var i = 0; i < afterArgs.length; i++) {
+	    var foo = ["get", "arguments", ["-", [".", "arguments", "length"],
+					    afterArgs.length - i]];
+	    if (afterArgs[i].constructor === Array) {
+		for (var j = 0; j < afterArgs[i].length; j++) {
+		    addArg(afterArgs[i][j], ["get", foo, j]);
+		}
+	    } else {
+		addArg(afterArgs[i], foo);
+	    }
 	}
     }
     return ["rawfun", name, args,
@@ -160,7 +191,7 @@ function funcall (name, args) {
 }
 
 function vareq (name, val) {
-    return "var " + name + " = " + rendex(val) + ";\n"
+    return "var " + rendex(name) + " = " + rendex(val) + ";\n"
 }
 
 function get (a, b) {
@@ -274,6 +305,7 @@ function macex (macs, code) {
     }
 }
 
+exports.dbg = dbg;
 exports.macex = macex;
 exports.rendst = rendst;
 exports.macs = macs;

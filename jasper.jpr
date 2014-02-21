@@ -1,7 +1,7 @@
-(assign list Array)
-
 (assign slice (fun slice (xs start end)
 		   (().slice.call xs start end)))
+
+(assign list (fun list ('xs) xs))
 
 (assign-mac mac (fun mac (name 'argsnbody)
 		     (list 'assign-mac name ((list 'fun name).concat argsnbody))))
@@ -13,7 +13,7 @@
   (().concat.apply () xs))
 
 (def alist (x)
-  (is x.constructor list))
+  (is x.constructor Array))
 
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
@@ -46,9 +46,9 @@
 
 (def runqq (a)
   (if (alist a)
-      (if (iso (get a 0) ',@)
+      (if (is (get a 0) ',@)
 	  (get a 1)
-	  (iso (get a 0) ',)
+	  (is (get a 0) ',)
 	  (list 'list (get a 1))
 	  (list 'list (cat '(cat) (map runqq a))))
       (cat '(list) (quote a))))
