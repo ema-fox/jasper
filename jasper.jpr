@@ -67,11 +67,6 @@
 (mac when (cond 'body)
   `(if ,cond (do ,@body)))
 
-'(def assoc (o k v)
-  (var= o2 (Object.create o))
-  (= (get o2 k) v)
-  o2)
-
 (mac each (i v xs 'body)
   (var= tmpmacs (Object))
   (= tmpmacs.symmacs (Object))
@@ -79,6 +74,23 @@
 		       `(get ,xs ,i)))
   `(for (var= ,i 0) (< ,i (, xs).length) (++ ,i)
 	,(macex tmpmacs `(do ,@body))))
+
+(def pair ('xs)
+  (var= ys ())
+  (for (var= i 0) (< i xs.length) (= i (+ i 2))
+    (ys.push (list (get xs i) (get xs (+ i 1)))))
+  ys)
+
+(def list2obj (args)
+  (var= res (Object))
+  (map (fn ((k v)) (= (get res k) v))
+       args)
+  res)
+
+(mac obj ('args)
+  `(list2obj (list ,@(map (fn ((k v))
+                            `(list ',k ,v))
+                          (pair args)))))
 
 (mac zap (f place 'args)
   `(= ,place (,f ,place ,@args)))
