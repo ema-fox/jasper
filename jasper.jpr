@@ -1,3 +1,5 @@
+'"use strict"
+
 (assign slice (fun slice (xs start end)
 		   (().slice.call xs start end)))
 
