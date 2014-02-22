@@ -7,7 +7,7 @@ escaped = char '\\' >> char 'n' >> return '\n'
 
 stringp = fmap showJSON $ between (char '"') (char '"') $ many $ escaped <|> noneOf "\""
 
-symbolBegin = letter <|> oneOf "/%-|$<>_*+="
+symbolBegin = letter <|> oneOf "!/%-|$<>_*+="
 
 symbol = fmap showJSON $ (symbolBegin >>= \x -> fmap (x:) (many $ symbolBegin <|> digit)) <|> (many1 $ char '.')
 
