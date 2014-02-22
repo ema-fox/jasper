@@ -226,6 +226,7 @@ makeciop("%", " % ", "0")
 makeciop("/", " / ", "1")
 makeciop("-", " - ", "0")
 makeciop("and", " && ", "true")
+makeciop("or", " || ", "false")
 
 var infixops = ["<", "="];
 

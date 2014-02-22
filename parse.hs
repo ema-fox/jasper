@@ -3,7 +3,7 @@ import Text.JSON
 import Text.ParserCombinators.Parsec hiding (spaces, space)
 import Control.Applicative ((<*), (*>))
 
-escaped = char '\\' >> char 'n' >> return '\n'
+escaped = char '\\' >> ((char 'n' >> return '\n') <|> char '"')
 
 stringp = fmap showJSON $ between (char '"') (char '"') $ many $ escaped <|> noneOf "\""
 
