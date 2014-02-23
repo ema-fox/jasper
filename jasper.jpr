@@ -109,8 +109,8 @@
   (prn (JSON.stringify x))
   x)
 
-(= sqrt Math.sqrt)
-(= ** Math.pow)
+(var= sqrt Math.sqrt)
+(var= ** Math.pow)
 
 (def distance ((pa0 pa1) (pb0 pb1))
   (sqrt (+ (** (- pb0 pa0) 2)
