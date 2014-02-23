@@ -160,6 +160,7 @@
 	  code)))
 
 (assign env (list (list 'macex macex)
+		  (list 'gensym gensym)
 		  (list 'require require)))
 
 (def eval-with (code env)
@@ -183,7 +184,7 @@
 			(eval-with (str '"return " (rendex (get foo 2))) env))))
       (is (get foo 0) 'assign-mac)
       (do
-	(prn (str '"\"" (rendex (get foo 2)) '"\""))
+	(prn (JSON.stringify (str (rendex (get foo 2)))))
 	(= (get macs (get foo 1))
 	   (eval-with (str '"return " (rendex (get foo 2))) env)))
       (prn (str (rendex foo) '";"))))
