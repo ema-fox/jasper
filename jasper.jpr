@@ -31,7 +31,7 @@
   a)
 
 (def map1 (f xs)
-  (().map.call xs f))
+  (().map.call xs (fun "" (x) (f x))))
 
 (def map (f 'xss)
   (if (is xss.length 1)
