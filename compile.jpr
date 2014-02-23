@@ -168,13 +168,13 @@
       (let foo (macex macs bar)
 	(if (is (get foo 0) 'assign)
 	    (do
-	      (prn (str '"var " (get foo 1) '" = " (rendex (get foo 2)) '";"))
+	      (prn (str '"var " (munge (get foo 1)) '" = " (rendex (get foo 2)) '";"))
 	      (env.push (list (munge (get foo 1))
 			      (eval-with (str '"return " (rendex (get foo 2)))
 					 env))))
 	    (is (get foo 0) 'assign-mac)
 	    (do
-	      (prn (JSON.stringify (rendex (get foo 2))))
+	      (prn (JSON.stringify (rendex (get foo 2))) '";")
 	      (= (get macs (get foo 1))
 	         (eval-with (str '"return " (rendex (get foo 2))) env)))
 	    (prn (str (rendex foo) '";")))))))
