@@ -1,16 +1,13 @@
 (assign fs (require 'fs))
 
-(var= gensym-counter 0)
+(assign gensym-counter 0)
 
 (def gensym (prefix)
-  (var= res '"")
-  (if prefix
-    (zap str res prefix))
-  (zap str res '_g gensym-counter)
-  (++ gensym-counter)
-  res)
+  (do1
+    (str (or prefix '"") '_g gensym-counter)
+    (++ gensym-counter)))
 
-(var= reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
+(assign reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
 
 (def munge (x)
   (if (or (! (is x.constructor String)) (is (get x 0) '"\""))
@@ -21,40 +18,39 @@
 	  '"")))
 
 (def fun (name args 'body)
-  (var= pre ())
-  (var= rest-arg false)
-  (each i arg args
-    (when (and (alist arg) (is (get arg 0) ''))
-      (= rest-arg (get arg 1))
-      (var= after-args (slice args (+ i 1)))
-      (= args (slice args 0 i))))
-  (each i arg args
-    (when (alist arg)
-      (var= replacement (gensym))
-      (each j inner-arg arg
-	(pre.push inner-arg `(get ,replacement ,j)))
-      (= arg replacement)))
-  (when rest-arg
-    (pre.push rest-arg `(slice arguments ,args.length (- arguments.length
-							,after-args.length)))
-    (each i arg after-args
-      (var= foo `(get arguments (- arguments.length ,(- after-args.length i))))
-      (if (alist arg)
-	(each j inner-arg arg
-	  (pre.push inner-arg `(get ,foo ,j)))
-	(pre.push arg foo))))
-  `(rawfun ,name ,args
-     (with ,pre
-       ,@body)))
+  (with (pre ()
+	 foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
+			    args)
+	 args (first foo-args)
+	 rest-arg (second (first foo-args))
+	 after-args (slice foo-args 1))
+    (each arg args
+      (when (alist arg)
+	(w/uniq sub
+	  (each (j inner-arg) arg
+	    (pre.push inner-arg `(get ,sub ,j)))
+	  (= arg sub))))
+    (when rest-arg
+      (pre.push rest-arg `(slice arguments ,args.length (- arguments.length
+							   ,after-args.length)))
+      (each (i arg) after-args
+	(var= foo `(get arguments (- arguments.length ,(- after-args.length i))))
+	(if (alist arg)
+	    (each (j inner-arg) arg
+	      (pre.push inner-arg `(get ,foo ,j)))
+	    (pre.push arg foo))))
+    `(rawfun ,name ,args
+       (with ,pre
+	 ,@body))))
 
 (def ifmac (cond then 'rest)
-  (if (is rest.length 0)
-      `(rawif ,cond ,then null)
-      (is rest.length 1)
-      `(rawif ,cond ,then ,(get rest 0))
-      `(rawif ,cond ,then (if ,@rest))))
+  `(rawif ,cond ,then ,(if (is rest.length 0)
+			   null
+			   (is rest.length 1)
+			   (get rest 0)
+			   `(if ,@rest))))
 
-(var= macs (obj if ifmac fun fun symmacs (obj)))
+(assign macs (obj if ifmac fun fun symmacs (obj)))
 
 (def commaop ('code)
   (join (map rendex code) '", "))
@@ -62,13 +58,12 @@
 (def dewith (code)
   (if (alist code)
       (if (is (get code 0) 'with)
-	  (do
-	    (var= foo (dewith (slice code 1)))
-	    (var= vars (get foo 0))
-	    (var= bindings (pair (get (get foo 1) 0)))
-	    (var= body (slice (get foo 1) 1))
-	    (var= syms (map first bindings))
-	    (var= replacements (map gensym syms))
+	  (with (foo (dewith (slice code 1))
+		 vars (get foo 0)
+		 bindings (pair (get (get foo 1) 0))
+		 body (slice (get foo 1) 1)
+		 syms (map first bindings)
+		 replacements (map gensym syms))
 	    (list (cat vars replacements)
 		  (macex (obj symmacs (list2obj (map (fn (a b)
 						       (list a (fn () b)))
@@ -79,8 +74,7 @@
 			      ,@body))))
 	  (is (get code 0) 'rawfun)
 	  (list () code)
-	  (do
-	    (var= foo (map dewith code))
+	  (let foo (map dewith code)
 	    (list (mapcat first foo) (map second foo))))
       (list () code)))
 
@@ -103,17 +97,17 @@
   (str '"++" (rendex a)))
 
 (def rawfun (name args 'body)
-  (var= foo (dewith (cat '(do) body)))
-  (var= names (get foo 0))
-  (= body (get foo 1))
-  (if (is names.length 0)
-      (var= vars '"")
-      (var= vars (str '"    var " (apply commaop names) '";\n")))
-  (str '"function " (munge name) '" (" (apply commaop args) '") {\n"
-       vars
-       '"    return " (rendex body) '"\n}"))
+  (with (foo (dewith (cat '(do) body))
+	 names (get foo 0))
+    (= body (get foo 1))
+    (str '"function " (munge name) '" (" (apply commaop args) '") {\n"
+	 (if (is names.length 0)
+	     '""
+	     (str '"    var " (apply commaop names) '";\n"))
+	 vars
+	 '"    return " (rendex body) '"\n}")))
 
-(var= exprenderers (obj get rawget rawfun rawfun ' quote ++ pp while rawwhile
+(assign exprenderers (obj get rawget rawfun rawfun ' quote ++ pp while rawwhile
 			rawif rawif do commaop))
 
 (map (fn ((name op id))
@@ -136,56 +130,51 @@
   (if (alist code)
       (if (is code.length 0)
 	  '"[]"
-	  (do
-	    (var= renderer (get exprenderers (get code 0)))
-	    (if renderer
-		(str '"(" (apply renderer (slice code 1)) '")")
-		(str '"(" (funcall (get code 0) (slice code 1)) '")"))))
+	  (aif (get exprenderers (get code 0))
+	       (str '"(" (apply it (slice code 1)) '")")
+	       (str '"(" (funcall (get code 0) (slice code 1)) '")")))
       (munge code)))
 
 (def macex (macs code)
   (if (and (alist code) (get code 0))
       (do
 	(= (get code 0) (macex macs (get code 0)))
-	(var= f (get macs (get code 0)))
-	(if f
-	    (macex macs (apply f (slice code 1)))
-	    (map (fn (x) (macex macs x)) code)))
+	(aif (get macs (get code 0))
+	     (macex macs (apply it (slice code 1)))
+	     (map (fn (x) (macex macs x)) code)))
       (if (is code.constructor String)
-	  (do
-	    (var= f (get macs.symmacs code))
-	    (if f
-		(f code)
-		code))
+	  (aif (get macs.symmacs code)
+	       (it code)
+	       code)
 	  code)))
 
 (assign env (list (list 'macex macex)
-		  (list 'gensym gensym)
+		  (list 'gensym 'gensym)
 		  (list 'require require)))
 
 (def eval-with (code env)
   (apply (Function (map first env) code)
 	 (map second env)))
 
-(var= input '"")
+(assign input '"")
 
 (callback (process.stdin.on 'data) (data)
 	  (zap + input data))
 
 (callback (process.stdin.on 'end) ()
-  (var= code (JSON.parse input))
-  (prn '"\"use strict\";")
-  (each i bar code
-    (var= foo (macex macs bar))
-    (if (is (get foo 0) 'assign)
-      (do
-	(prn (str '"var " (get foo 1) '" = " (rendex (get foo 2)) '";"))
-	(env.push (list (munge (get foo 1))
-			(eval-with (str '"return " (rendex (get foo 2))) env))))
-      (is (get foo 0) 'assign-mac)
-      (do
-	(prn (JSON.stringify (str (rendex (get foo 2)))))
-	(= (get macs (get foo 1))
-	   (eval-with (str '"return " (rendex (get foo 2))) env)))
-      (prn (str (rendex foo) '";"))))
-  null)
+  (let code (JSON.parse input)
+    (prn '"\"use strict\";")
+    (each bar code
+      (let foo (macex macs bar)
+	(if (is (get foo 0) 'assign)
+	    (do
+	      (prn (str '"var " (get foo 1) '" = " (rendex (get foo 2)) '";"))
+	      (env.push (list (munge (get foo 1))
+			      (eval-with (str '"return " (rendex (get foo 2)))
+					 env))))
+	    (is (get foo 0) 'assign-mac)
+	    (do
+	      (prn (JSON.stringify (rendex (get foo 2))))
+	      (= (get macs (get foo 1))
+	         (eval-with (str '"return " (rendex (get foo 2))) env)))
+	    (prn (str (rendex foo) '";")))))))
