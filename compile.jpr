@@ -10,7 +10,7 @@
   (++ gensym-counter)
   res)
 
-(var= reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__))
+(var= reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
 
 (def munge (x)
   (if (or (! (is x.constructor String)) (is (get x 0) '"\""))
@@ -178,11 +178,13 @@
     (var= foo (macex macs bar))
     (if (is (get foo 0) 'assign)
       (do
+	(prn (str '"var " (get foo 1) '" = " (rendex (get foo 2)) '";"))
 	(env.push (list (munge (get foo 1))
-			(eval-with (str '"return " (rendex (get foo 2))) env)))
-	(prn (str '"var " (get foo 1) '" = " (rendex (get foo 2)) '";")))
+			(eval-with (str '"return " (rendex (get foo 2))) env))))
       (is (get foo 0) 'assign-mac)
-      (= (get macs (get foo 1))
-	 (eval-with (str '"return " (rendex (get foo 2))) env))
+      (do
+	(prn (str '"\"" (rendex (get foo 2)) '"\""))
+	(= (get macs (get foo 1))
+	   (eval-with (str '"return " (rendex (get foo 2))) env)))
       (prn (str (rendex foo) '";"))))
   null)

@@ -69,6 +69,22 @@
 (mac let (name val 'body)
   `(with (,name ,val) ,@body))
 
+(def listify (x)
+  (if (alist x)
+      x
+      (list x)))
+
+(mac w/uniq (names 'body)
+  `(with ,(mapcat (fn (n) (list n `(gensym ,n)))
+		  (listify names))
+	 ,@body))
+
+(mac do1 (x 'xs)
+  (w/uniq g
+    `(let ,g ,x
+       ,@xs
+       ,g)))
+
 (def first ((a _)) a)
 (def second ((_ a)) a)
 
@@ -93,12 +109,33 @@
   `(list2obj (list ,@(map (fn ((k v))
                             `(list ',k ,v))
                           (pair args)))))
-(mac each (i v xs 'body)
-  `(let ,i 0
-     (while (< ,i (, xs).length)
-       ,@(macex (obj symmacs (list2obj (list v (fn () `(get ,xs ,i)))))
-		`(do ,@body))
-       (++ ,i))))
+(mac each (iv xs 'body)
+  (with (i null v null)
+    (if (alist iv)
+	(do
+	  (= i (first iv))
+	  (= v (second iv)))
+	(do
+	  (= i (gensym i))
+	  (= v iv)))
+    `(let ,i 0
+       (while (< ,i (, xs).length)
+	 ,(macex (obj symmacs (list2obj (list v (fn () `(get ,xs ,i)))))
+		 `(do ,@body))
+	 (++ ,i)))))
+
+(def index-by (f xs)
+  (let index false
+    (each (i v) xs
+      (if (f v)
+	  (= index i)))
+    index))
+
+(def split-by (f xs)
+  (let i (index-by f xs)
+    (if (is i false)
+	(list xs ())
+	(list (slice xs 0 i) (slice xs i)))))
 
 (mac callback (to from 'body)
   `(,@to (fn ,from ,@body)))
