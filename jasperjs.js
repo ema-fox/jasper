@@ -280,6 +280,9 @@ function rendst (code) {
 
 function macex (macs, code) {
     if (code.constructor === Array && code[0]) {
+        if (code[0] === "'") {
+            return code
+        }
 	code[0] = macex(macs, code[0]);
 	var mac = macs[code[0]];
 	if (mac) {
