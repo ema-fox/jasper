@@ -31,10 +31,7 @@
   a)
 
 (def map1 (f xs)
-  (var= ys ())
-  (for (var= i 0) (< i xs.length) (++ i)
-       (ys.push (f (get xs i))))
-  ys)
+  (().map.call xs f))
 
 (def map (f 'xss)
   (if (is xss.length 1)
