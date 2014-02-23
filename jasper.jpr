@@ -69,15 +69,11 @@
 (mac let (name val 'body)
   `(with (,name ,val) ,@body))
 
-(mac each (i v xs 'body)
-  `(let ,i 0
-     (while (< ,i (, xs).length)
-       ,@(macex (obj symmacs (list2obj (list v (fn () `(get ,xs ,i)))))
-		`(do ,@body))
-       (++ ,i))))
-
 (def first ((a _)) a)
 (def second ((_ a)) a)
+
+(mac zap (f place 'args)
+  `(= ,place (,f ,place ,@args)))
 
 (def pair (xs)
   (with (ys ()
@@ -97,9 +93,12 @@
   `(list2obj (list ,@(map (fn ((k v))
                             `(list ',k ,v))
                           (pair args)))))
-
-(mac zap (f place 'args)
-  `(= ,place (,f ,place ,@args)))
+(mac each (i v xs 'body)
+  `(let ,i 0
+     (while (< ,i (, xs).length)
+       ,@(macex (obj symmacs (list2obj (list v (fn () `(get ,xs ,i)))))
+		`(do ,@body))
+       (++ ,i))))
 
 (mac callback (to from 'body)
   `(,@to (fn ,from ,@body)))

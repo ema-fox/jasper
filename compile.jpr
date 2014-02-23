@@ -32,7 +32,7 @@
     (when (alist arg)
       (var= replacement (gensym))
       (each j inner-arg arg
-	(pre.push inner-arg `(get ,replacement j)))
+	(pre.push inner-arg `(get ,replacement ,j)))
       (= arg replacement)))
   (when rest-arg
     (pre.push rest-arg `(slice arguments ,args.length (- arguments.length
@@ -41,7 +41,7 @@
       (var= foo `(get arguments (- arguments.length ,(- after-args.length i))))
       (if (alist arg)
 	(each j inner-arg arg
-	  (pre.push inner-arg `(get ,foo , j)))
+	  (pre.push inner-arg `(get ,foo ,j)))
 	(pre.push arg foo))))
   `(rawfun ,name ,args
      (with ,pre
@@ -69,7 +69,7 @@
 	    (var= body (slice (get foo 1) 1))
 	    (var= syms (map first bindings))
 	    (var= replacements (map gensym syms))
-	    (list (cat vars syms)
+	    (list (cat vars replacements)
 		  (macex (obj symmacs (list2obj (map (fn (a b)
 						       (list a (fn () b)))
 						     syms replacements)))
@@ -179,10 +179,10 @@
     (if (is (get foo 0) 'assign)
       (do
 	(env.push (list (munge (get foo 1))
-			(eval-with (str 'return (rendex (get foo 2))) env)))
+			(eval-with (str '"return " (rendex (get foo 2))) env)))
 	(prn (str '"var " (get foo 1) '" = " (rendex (get foo 2)) '";")))
       (is (get foo 0) 'assign-mac)
       (= (get macs (get foo 1))
-	 (eval-with (str 'return (rendex (get foo 2))) env))
+	 (eval-with (str '"return " (rendex (get foo 2))) env))
       (prn (str (rendex foo) '";"))))
   null)
