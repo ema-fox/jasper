@@ -17,6 +17,9 @@
 (def join (xs x)
   (().join.call xs x))
 
+(def str ('xs)
+  (join xs '""))
+
 (def alist (x)
   (is x.constructor Array))
 
