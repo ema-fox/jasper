@@ -75,7 +75,10 @@
   `(for (var= ,i 0) (< ,i (, xs).length) (++ ,i)
 	,(macex tmpmacs `(do ,@body))))
 
-(def pair ('xs)
+(def first ((a _)) a)
+(def second ((_ a)) a)
+
+(def pair (xs)
   (var= ys ())
   (for (var= i 0) (< i xs.length) (= i (+ i 2))
     (ys.push (list (get xs i) (get xs (+ i 1)))))

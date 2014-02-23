@@ -32,7 +32,7 @@ function sfy (x) {
 }
 
 function dbg (y, x) {
-    console.warn(sfy(y), sfy(x));
+    console.warn(sfy(y), sfy(x||""));
     return x
 }
 
