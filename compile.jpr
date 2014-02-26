@@ -9,39 +9,46 @@
 
 (assign reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
 
+(assign wholereps (obj if 'if_ else 'else_ with 'with_))
+
 (def munge (x)
-  (if (or (! (is x.constructor String)) (is (get x 0) '"\""))
+  (if (or (! (astr x)) (is (get x 0) '"\""))
     x
-    (join (map (fn (y)
-		 (or (get reps y) y))
-	       x)
-	  '"")))
+    (or (get wholereps x)
+	(join (map (fn (y)
+		     (or (get reps y) y))
+		   x)
+	      '""))))
 
 (def fun (name args 'body)
-  (with (pre ()
-	 foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
+  (with (foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
 			    args)
 	 args (first foo-args)
-	 rest-arg (second (first foo-args))
-	 after-args (slice foo-args 1))
+	 rest-arg (aif (first (second foo-args))
+		       (second it)
+		       false)
+	 after-args (slice (second foo-args) 1))
     (each arg args
       (when (alist arg)
 	(w/uniq sub
 	  (each (j inner-arg) arg
-	    (pre.push inner-arg `(get ,sub ,j)))
+	    (= body `((let ,inner-arg (get ,sub ,j)
+			,@body))))
 	  (= arg sub))))
     (when rest-arg
-      (pre.push rest-arg `(slice arguments ,args.length (- arguments.length
-							   ,after-args.length)))
+      (= body `((let ,rest-arg (slice arguments ,args.length
+                                      (- arguments.length ,after-args.length))
+		  ,@body)))
       (each (i arg) after-args
-	(var= foo `(get arguments (- arguments.length ,(- after-args.length i))))
-	(if (alist arg)
-	    (each (j inner-arg) arg
-	      (pre.push inner-arg `(get ,foo ,j)))
-	    (pre.push arg foo))))
+	(let foo `(get arguments (- arguments.length ,(- after-args.length i)))
+	  (if (alist arg)
+	      (each (j inner-arg) arg
+		(= body `((let ,inner-arg (get ,foo ,j)
+			    ,@body))))
+	      (= body `((let ,arg ,foo
+			  ,@body)))))))
     `(rawfun ,name ,args
-       (with ,pre
-	 ,@body))))
+       ,@body)))
 
 (def ifmac (cond then 'rest)
   `(rawif ,cond ,then ,(if (is rest.length 0)
@@ -55,26 +62,21 @@
 (def commaop ('code)
   (join (map rendex code) '", "))
 
-(def dewith (code)
+(def delet (code)
   (if (alist code)
-      (if (is (get code 0) 'with)
-	  (with (foo (dewith (slice code 1))
+      (if (is (get code 0) 'let)
+	  (with (foo (delet (slice code 1))
 		 vars (get foo 0)
-		 bindings (pair (get (get foo 1) 0))
-		 body (slice (get foo 1) 1)
-		 syms (map first bindings)
-		 replacements (map gensym syms))
-	    (list (cat vars replacements)
-		  (macex (obj symmacs (list2obj (map (fn (a b)
-						       (list a (fn () b)))
-						     syms replacements)))
-			 `(do ,@(map (fn (a b)
-				       `(= ,a ,b))
-				     syms (map second bindings))
-			      ,@body))))
+		 name (get (get foo 1) 0)
+		 val (get (get foo 1) 1)
+		 body (slice (get foo 1) 2)
+		 sub (gensym name))
+	    (list (cat vars (list sub))
+		  `(do (= ,sub ,val)
+		       ,@(subsname name sub body))))
 	  (is (get code 0) 'rawfun)
 	  (list () code)
-	  (let foo (map dewith code)
+	  (let foo (map delet code)
 	    (list (mapcat first foo) (map second foo))))
       (list () code)))
 
@@ -97,14 +99,13 @@
   (str '"++" (rendex a)))
 
 (def rawfun (name args 'body)
-  (with (foo (dewith (cat '(do) body))
+  (with (foo (delet (cat '(do) body))
 	 names (get foo 0))
     (= body (get foo 1))
     (str '"function " (munge name) '" (" (apply commaop args) '") {\n"
 	 (if (is names.length 0)
 	     '""
 	     (str '"    var " (apply commaop names) '";\n"))
-	 vars
 	 '"    return " (rendex body) '"\n}")))
 
 (assign exprenderers (obj get rawget rawfun rawfun ' quote ++ pp while rawwhile
@@ -133,7 +134,9 @@
 	  (aif (get exprenderers (get code 0))
 	       (str '"(" (apply it (slice code 1)) '")")
 	       (str '"(" (funcall (get code 0) (slice code 1)) '")")))
-      (munge code)))
+      (if (is code null)
+	  'null
+	  (munge code))))
 
 (def macex (macs code)
   (if (and (alist code) (get code 0))
@@ -142,14 +145,9 @@
 	(aif (get macs (get code 0))
 	     (macex macs (apply it (slice code 1)))
 	     (map (fn (x) (macex macs x)) code)))
-      (if (is code.constructor String)
-	  (aif (get macs.symmacs code)
-	       (it code)
-	       code)
-	  code)))
+      code))
 
-(assign env (list (list 'macex macex)
-		  (list 'gensym 'gensym)
+(assign env (list (list 'gensym gensym)
 		  (list 'require require)))
 
 (def eval-with (code env)

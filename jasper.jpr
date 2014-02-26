@@ -19,14 +19,13 @@
   (join xs '""))
 
 (def alist (x)
-  (is x.constructor Array))
+  (and x (is x.constructor Array)))
+
+(def astr (x)
+  (and x (is x.constructor String)))
 
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
-
-(def prn (a 'as)
-  (apply console.log a as)
-  a)
 
 (def map1 (f xs)
   (().map.call xs (fun "" (x) (f x))))
@@ -34,13 +33,18 @@
 (def map (f 'xss)
   (if (is xss.length 1)
       (map1 f (get xss 0))
-      (with (length (apply Math.min (map1 (fun "" (x) x.length) xss))
-	     ys ()
-	     i 0)
-	(while (< i length)
-	  (ys.push (apply f (map1 (fun "" (x) (get x i)) xss)))
-	  (++ i))
-	ys)))
+      (let length (apply Math.min (prn (map1 (fun "" (x) x.length) xss)))
+	(let ys ()
+	  (let i 0
+	    (console.warn length ys i xss)
+	    (while (< i length)
+	      (ys.push (apply f (map1 (fun "" (x) (get x i)) xss)))
+	      (++ i)))
+	  ys))))
+
+(def prn (a 'as)
+  (apply console.log a as)
+  a)
 
 (def mapcat (f 'xss)
   (apply cat (apply map f xss)))
@@ -66,8 +70,28 @@
 (mac when (cond 'body)
   `(if ,cond (do ,@body)))
 
-(mac let (name val 'body)
-  `(with (,name ,val) ,@body))
+(def subsname (name sub code)
+  (if (alist code)
+      (if (is (get code 0) '.)
+	  `(. ,(subsname name sub (get code 1)) ,@(slice code 2))
+	  (map (fn (x) (subsname name sub x)) code))
+      (is code name)
+      sub
+      code))
+
+(def first ((a _)) a)
+(def second ((_ a)) a)
+
+(mac with (bindings 'body)
+  (if (is bindings.length 0)
+      `(do ,@body)
+      `(let ,(first bindings) ,(second bindings)
+	 (with ,(slice bindings 2)
+	   ,@body))))
+
+(mac aif (expr then else_)
+  `(let it ,expr
+     (if it ,then ,else_)))
 
 (def listify (x)
   (if (alist x)
@@ -75,7 +99,7 @@
       (list x)))
 
 (mac w/uniq (names 'body)
-  `(with ,(mapcat (fn (n) (list n `(gensym ,n)))
+  `(with ,(mapcat (fn (n) (list n `(gensym ',n)))
 		  (listify names))
 	 ,@body))
 
@@ -84,9 +108,6 @@
     `(let ,g ,x
        ,@xs
        ,g)))
-
-(def first ((a _)) a)
-(def second ((_ a)) a)
 
 (mac zap (f place 'args)
   `(= ,place (,f ,place ,@args)))
@@ -100,7 +121,7 @@
     ys))
 
 (def list2obj (args)
-  (let res (Object)
+  (let res (Object.create null)
     (map (fn ((k v)) (= (get res k) v))
 	 args)
     res))
@@ -109,6 +130,7 @@
   `(list2obj (list ,@(map (fn ((k v))
                             `(list ',k ,v))
                           (pair args)))))
+
 (mac each (iv xs 'body)
   (with (i null v null)
     (if (alist iv)
@@ -120,8 +142,7 @@
 	  (= v iv)))
     `(let ,i 0
        (while (< ,i (, xs).length)
-	 ,(macex (obj symmacs (list2obj (list v (fn () `(get ,xs ,i)))))
-		 `(do ,@body))
+	 ,@(subsname v `(get ,xs ,i) body)
 	 (++ ,i)))))
 
 (def index-by (f xs)
