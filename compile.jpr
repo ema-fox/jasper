@@ -27,13 +27,11 @@
 			  (first name)
 			  (= name (slice name 1)))
 			0)
-	     foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
-				name)
-	     before (first foo-args)
-	     rest (aif (first (second foo-args))
-		       (second it)
-		       false)
-	     after (slice (second foo-args) 1))
+	     (before (rest 'after)) (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
+					      name)
+	     rest (if rest
+		      (second rest)
+		      false))
 	(if (is name.length 0)
 	    `(do ,@body)
 	    (w/uniq g
@@ -52,17 +50,17 @@
       `(rawlet ,name ,val ,@body)))
 
 (def fun (name args 'body)
-  (with (foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
-			    args)
-	 args (first foo-args))
-    (each arg args
+  (let (before restnafter) (split-by (fn (arg) (and (alist arg)
+						    (is (get arg 0) '')))
+				     args)
+    (each arg before
       (when (alist arg)
 	(w/uniq sub
 	  (= body `((let ,arg ,sub
 		      ,@body)))
 	  (= arg sub))))
-    `(rawfun ,name ,args
-       (let (,args.length ,@(second foo-args)) arguments
+    `(rawfun ,name ,before
+       (let (,before.length ,@restnafter) arguments
 	 ,@body))))
 
 (def ifmac (cond then 'rest)
@@ -80,11 +78,7 @@
 (def delet (code)
   (if (alist code)
       (if (is (get code 0) 'rawlet)
-	  (with (foo (delet (slice code 1))
-		 vars (get foo 0)
-		 name (get (get foo 1) 0)
-		 val (get (get foo 1) 1)
-		 body (slice (get foo 1) 2)
+	  (with ((vars (name val 'body)) (delet (slice code 1))
 		 sub (gensym name))
 	    (list (cat vars (list sub))
 		  `(do (= ,sub ,val)
@@ -114,9 +108,7 @@
   (str '"++" (rendex a)))
 
 (def rawfun (name args 'body)
-  (with (foo (delet (cat '(do) body))
-	 names (get foo 0))
-    (= body (get foo 1))
+  (let (names body) (delet (cat '(do) body))
     (str '"function " (munge name) '" (" (apply commaop args) '") {\n"
 	 (if (is names.length 0)
 	     '""
