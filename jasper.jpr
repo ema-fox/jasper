@@ -24,6 +24,9 @@
 (def astr (x)
   (and x (is x.constructor String)))
 
+(def anumber (x)
+  (is (typeof x) 'number))
+
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
 

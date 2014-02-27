@@ -20,35 +20,50 @@
 		   x)
 	      '""))))
 
+(def letmac (name val 'body)
+  (if (alist name)
+      (with (offset (if (anumber (first name))
+			(do1
+			  (first name)
+			  (= name (slice name 1)))
+			0)
+	     foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
+				name)
+	     before (first foo-args)
+	     rest (aif (first (second foo-args))
+		       (second it)
+		       false)
+	     after (slice (second foo-args) 1))
+	(if (is name.length 0)
+	    `(do ,@body)
+	    (w/uniq g
+	      (each (i name) before
+		(= body `((let ,name (get ,g ,(+ offset i))
+			    ,@body))))
+	      (when rest
+		(= body `((let ,rest (slice ,g ,(+ offset before.length)
+					    (- (, g).length ,after.length))
+			    ,@body)))
+		(each (i name) after
+		  (= body `((let ,name (get ,g (- (, g).length ,(- after.length i)))
+			      ,@body)))))
+	      `(let ,g ,val
+		 ,@body))))
+      `(rawlet ,name ,val ,@body)))
+
 (def fun (name args 'body)
   (with (foo-args (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
 			    args)
-	 args (first foo-args)
-	 rest-arg (aif (first (second foo-args))
-		       (second it)
-		       false)
-	 after-args (slice (second foo-args) 1))
+	 args (first foo-args))
     (each arg args
       (when (alist arg)
 	(w/uniq sub
-	  (each (j inner-arg) arg
-	    (= body `((let ,inner-arg (get ,sub ,j)
-			,@body))))
+	  (= body `((let ,arg ,sub
+		      ,@body)))
 	  (= arg sub))))
-    (when rest-arg
-      (= body `((let ,rest-arg (slice arguments ,args.length
-                                      (- arguments.length ,after-args.length))
-		  ,@body)))
-      (each (i arg) after-args
-	(let foo `(get arguments (- arguments.length ,(- after-args.length i)))
-	  (if (alist arg)
-	      (each (j inner-arg) arg
-		(= body `((let ,inner-arg (get ,foo ,j)
-			    ,@body))))
-	      (= body `((let ,arg ,foo
-			  ,@body)))))))
     `(rawfun ,name ,args
-       ,@body)))
+       (let (,args.length ,@(second foo-args)) arguments
+	 ,@body))))
 
 (def ifmac (cond then 'rest)
   `(rawif ,cond ,then ,(if (is rest.length 0)
@@ -57,14 +72,14 @@
 			   (get rest 0)
 			   `(if ,@rest))))
 
-(assign macs (obj if ifmac fun fun symmacs (obj)))
+(assign macs (obj if ifmac fun fun let letmac))
 
 (def commaop ('code)
   (join (map rendex code) '", "))
 
 (def delet (code)
   (if (alist code)
-      (if (is (get code 0) 'let)
+      (if (is (get code 0) 'rawlet)
 	  (with (foo (delet (slice code 1))
 		 vars (get foo 0)
 		 name (get (get foo 1) 0)
