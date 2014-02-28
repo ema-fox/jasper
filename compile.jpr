@@ -27,7 +27,9 @@
 			  (first name)
 			  (= name (slice name 1)))
 			0)
-	     (before (rest 'after)) (split-by (fn (arg) (and (alist arg) (is (get arg 0) '')))
+	     (before (rest 'after)) (split-by (fn (arg)
+						(and (alist arg)
+						     (is (get arg 0) '')))
 					      name)
 	     rest (if rest
 		      (second rest)
@@ -172,14 +174,13 @@
     (each bar code
       (let foo (macex macs bar)
 	(if (is (get foo 0) 'assign)
-	    (do
-	      (prn (str '"var " (munge (get foo 1)) '" = " (rendex (get foo 2)) '";"))
+	    (let quux (rendex (get foo 2))
+	      (prn (str '"var " (munge (get foo 1)) '" = " quux '";"))
 	      (env.push (list (munge (get foo 1))
-			      (eval-with (str '"return " (rendex (get foo 2)))
-					 env))))
+			      (eval-with (str '"return " quux) env))))
 	    (is (get foo 0) 'assign-mac)
-	    (do
-	      (prn (JSON.stringify (rendex (get foo 2))) '";")
+	    (let quux (rendex (get foo 2))
+	      (prn (JSON.stringify quux) '";")
 	      (= (get macs (get foo 1))
-	         (eval-with (str '"return " (rendex (get foo 2))) env)))
+	         (eval-with (str '"return " quux) env)))
 	    (prn (str (rendex foo) '";")))))))
