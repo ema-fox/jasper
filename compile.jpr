@@ -132,9 +132,25 @@
        (/ " / " 1)
        (and " && " true)
        (or " || " false)
-       (< " < " true)
+       (raw< " < " true)
+       (raw<= " < " true)
        (= " = " null)
-       (is " === " true)))
+       (rawis " === " true)))
+
+(map (fn ((name op))
+       (= (get macs name) (fn ('xs)
+			    (if (< xs.length 2)
+				true
+				(is xs.length 2)
+				(list op (get xs 0) (get xs 1))
+				(w/uniq (g1 g2)
+				  `(with (,g1 ,(get xs 0)
+					  ,g2 ,(get xs 1))
+				     (and (,op ,g1 ,g2)
+					  (,name ,g2 ,@(slice xs 2)))))))))
+     '((< raw<)
+       (<= raw<=)
+       (is rawis)))
 
 (def rendex (code)
   (if (alist code)
@@ -148,7 +164,7 @@
 	  (munge code))))
 
 (def macex (macs code)
-  (if (and (alist code) (get code 0))
+  (if (and (alist code) (get code 0) (! (is (get code 0) '')))
       (do
 	(= (get code 0) (macex macs (get code 0)))
 	(aif (get macs (get code 0))
@@ -215,6 +231,11 @@
 
 (assign files (slice process.argv 2))
 
+(def now ()
+  (/ ((new Date).getTime) 1000))
+
+(assign start (now))
+
 (callback (gather-callbacks (map (fn (file)
 				   (fn (f)
 				     (callback (read-first-file (map (fn (path)
@@ -224,5 +245,7 @@
 					       (parse data f))))
 				 files))
 	  (codes)
+  (prn (- (now) start))
   (let code (apply cat codes)
-    (fs.writeFileSync (str (get files (- files.length 1)) '".js") (compile code))))
+    (fs.writeFileSync (str (get files (- files.length 1)) '".js") (compile code)))
+  (prn (- (now) start)))
