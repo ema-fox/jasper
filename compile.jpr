@@ -65,6 +65,15 @@
        (let (,before.length ,@restnafter) arguments
 	 ,@body))))
 
+(def asbool (x)
+  (w/uniq g
+    `(let ,g ,x
+       (if (and (alist ,g) (is (,g).length 0))
+	   false
+	   (if (is ,g 0)
+	       true
+	       ,g)))))
+
 (def ifmac (cond then 'rest)
   `(rawif ,cond ,then ,(if (is rest.length 0)
 			   null
@@ -72,7 +81,14 @@
 			   (get rest 0)
 			   `(if ,@rest))))
 
-(assign macs (obj if ifmac fun fun let letmac))
+(def lifmac (cond then 'rest)
+  `(rawif ,(asbool cond) ,then ,(if (is rest.length 0)
+				    null
+				    (is rest.length 1)
+				    (get rest 0)
+				    `(lif ,@rest))))
+
+(assign macs (obj if ifmac fun fun let letmac lif lifmac))
 
 (def commaop ('code)
   (join (map rendex code) '", "))
@@ -161,6 +177,8 @@
 	       (str '"(" (funcall (get code 0) (slice code 1)) '")")))
       (if (is code null)
 	  'null
+	  (is code undefined)
+	  'undefined
 	  (munge code))))
 
 (def macex (macs code)

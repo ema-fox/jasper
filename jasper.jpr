@@ -22,10 +22,13 @@
   (and x (is x.constructor Array)))
 
 (def astr (x)
-  (and x (is x.constructor String)))
+  (is (typeof x) 'string))
 
 (def anumber (x)
   (is (typeof x) 'number))
+
+(def afunction (x)
+  (is (typeof x) 'function))
 
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
@@ -36,7 +39,7 @@
 (def map (f 'xss)
   (if (is xss.length 1)
       (map1 f (get xss 0))
-      (let length (apply Math.min (prn (map1 (fun "" (x) x.length) xss)))
+      (let length (apply Math.min (map1 (fun "" (x) x.length) xss))
 	(let ys ()
 	  (let i 0
 	    (console.warn length ys i xss)
@@ -73,6 +76,14 @@
 (mac when (cond 'body)
   `(if ,cond (do ,@body)))
 
+(mac land ('xs)
+  (lif (is xs.length 0)
+       true
+       (is xs.length 1)
+       (get xs 0)
+       `(lif ,(get xs 0)
+	     (land ,@(slice xs 1)))))
+
 (def subsname (name sub code)
   (if (alist code)
       (if (is (get code 0) '.)
@@ -92,9 +103,13 @@
 	 (with ,(slice bindings 2)
 	   ,@body))))
 
-(mac aif (expr then else_)
+(mac aif (expr then else)
   `(let it ,expr
-     (if it ,then ,else_)))
+     (if it ,then ,else)))
+
+(mac laif (expr then else)
+  `(let it ,expr
+     (lif it ,then ,else)))
 
 (def listify (x)
   (if (alist x)
@@ -105,6 +120,13 @@
   `(with ,(mapcat (fn (n) (list n `(gensym ',n)))
 		  (listify names))
 	 ,@body))
+
+(mac lor ('xs)
+  (lif xs
+       (w/uniq g
+	 `(let ,g (get xs 0)
+	    (lif ,g g (lor ,@(slice xs 1)))))))
+
 
 (mac do1 (x 'xs)
   (w/uniq g
@@ -160,6 +182,27 @@
     (if (is i false)
 	(list xs ())
 	(list (slice xs 0 i) (slice xs i)))))
+
+(def some (f xs)
+  (let res false
+    (each x xs
+      (laif (land (! res) (f x))
+	    (= res it)))
+    res))
+
+(def testify (test)
+  (if (afunction test)
+      test
+      (fn (x) (is test x))))
+
+(def all (test xs)
+  (let f (testify test)
+    (! (some (fn (x) (! (f x))) xs))))
+
+(def iso (x y)
+  (or (is x y)
+      (and (alist x) (alist y) (is x.length y.length)
+	   (all true (map iso x y)))))
 
 (mac callback (to from 'body)
   `(,@to (fn ,from ,@body)))
