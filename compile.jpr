@@ -217,10 +217,6 @@
 	    (= res (str res (rendex foo) '";\n")))))
     res))
 
-(assign paths (process.env.JASPERPATH.split '":"))
-
-(assign spawn (require 'child_process).spawn)
-
 (def parse (data f)
   (let foo (pfile (str data) 0)
     (lif (second foo)
@@ -254,12 +250,11 @@
 
 (callback (gather-callbacks (map (fn (file)
 				   (fn (f)
-				     (callback (read-first-file (map (fn (path)
-								       (str path '/ file))
-								     paths))
-					       (data)
-					       (parse data f))))
-				 files))
+				     (callback (fs.readFile file) (err data)
+				       (if err
+					   (prn err)
+					   (parse data f)))))
+				 `(,(str _dirname '"/jasper.jpr") ,@files)))
 	  (codes)
   (prn (- (now) start))
   (let code (apply cat codes)
