@@ -48,8 +48,17 @@
 	      (++ i)))
 	  ys))))
 
+(def sfy (x)
+  (if (is x null)
+      'null
+      (is x undefined)
+      'undefined
+      (alist x)
+      (str '"(" (join (map sfy x) '" ") '")")
+      (str x)))
+
 (def prn (a 'as)
-  (apply console.log a as)
+  (apply console.log (sfy a) (map sfy as))
   a)
 
 (def mapcat (f 'xss)
@@ -111,6 +120,14 @@
   `(let it ,expr
      (lif it ,then ,else)))
 
+(mac afn (args 'body)
+  `(fun self ,args ,@body))
+
+(mac awhile (cond 'body)
+  `(let it undefined
+     `(while (= it ,cond)
+	,@body)))
+
 (def listify (x)
   (if (alist x)
       x
@@ -121,11 +138,17 @@
 		  (listify names))
 	 ,@body))
 
+(mac dbg ('xs)
+  (w/uniq g
+    `(let ,g ,xs
+       (prn ',xs '":" ,g)
+       ,g)))
+
 (mac lor ('xs)
   (lif xs
        (w/uniq g
-	 `(let ,g (get xs 0)
-	    (lif ,g g (lor ,@(slice xs 1)))))))
+	 `(let ,g ,(get xs 0)
+	    (lif ,g ,g (lor ,@(slice xs 1)))))))
 
 
 (mac do1 (x 'xs)
@@ -170,11 +193,22 @@
 	 ,@(subsname v `(get ,xs ,i) body)
 	 (++ ,i)))))
 
-(def index-by (f xs)
-  (let index false
+(def testify (test)
+  (if (afunction test)
+      test
+      (fn (x) (is test x))))
+
+(mac no (x)
+  `(lif ,x
+	false
+	true))
+
+(def index-by (test xs)
+  (with (f (testify test)
+	 index false)
     (each (i v) xs
-      (if (f v)
-	  (= index i)))
+      (lif (land (no index) (f v))
+	   (= index i)))
     index))
 
 (def split-by (f xs)
@@ -183,17 +217,13 @@
 	(list xs ())
 	(list (slice xs 0 i) (slice xs i)))))
 
-(def some (f xs)
-  (let res false
+(def some (test xs)
+  (with (f (testify test)
+	 res false)
     (each x xs
       (laif (land (! res) (f x))
 	    (= res it)))
     res))
-
-(def testify (test)
-  (if (afunction test)
-      test
-      (fn (x) (is test x))))
 
 (def all (test xs)
   (let f (testify test)
@@ -209,11 +239,6 @@
 
 
 '"non core:"
-
-
-(def dbg (x)
-  (prn (JSON.stringify x))
-  x)
 
 (assign sqrt Math.sqrt)
 (assign ** Math.pow)

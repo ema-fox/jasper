@@ -68,7 +68,7 @@
 (def asbool (x)
   (w/uniq g
     `(let ,g ,x
-       (if (and (alist ,g) (is (,g).length 0))
+       (if (and (alist ,g) (is (, g).length 0))
 	   false
 	   (if (is ,g 0)
 	       true
@@ -125,6 +125,9 @@
 (def pp (a)
   (str '"++" (rendex a)))
 
+(def r-asnumber (a)
+  (str '+ (rendex a)))
+
 (def rawfun (name args 'body)
   (let (names body) (delet (cat '(do) body))
     (str '"function " (munge name) '" (" (apply commaop args) '") {\n"
@@ -134,7 +137,7 @@
 	 '"    return " (rendex body) '"\n}")))
 
 (assign exprenderers (obj get rawget rawfun rawfun ' quote ++ pp while rawwhile
-			rawif rawif do commaop))
+			rawif rawif do commaop asnumber r-asnumber))
 
 (map (fn ((name op id))
        (= (get exprenderers name) (fn ('xs)
@@ -149,7 +152,7 @@
        (and " && " true)
        (or " || " false)
        (raw< " < " true)
-       (raw<= " < " true)
+       (raw<= " <= " true)
        (= " = " null)
        (rawis " === " true)))
 
@@ -219,15 +222,10 @@
 (assign spawn (require 'child_process).spawn)
 
 (def parse (data f)
-  (with (child (spawn 'runghc (list (str (first paths) '/ '"parse.hs"))
-		      (obj stdio '(pipe pipe 2)))
-	 res '"")
-    (callback (child.stdout.on 'data) (chunk)
-      (zap str res chunk))
-    (callback (child.stdout.on 'end) ()
-      (f (JSON.parse res)))
-    (child.stdin.write data)
-    (child.stdin.end)))
+  (let foo (pfile (str data) 0)
+    (lif (second foo)
+	 (f (first foo))
+	 (prn (first foo)))))
 
 (def read-first-file (paths f)
   ((fun self (ps)

@@ -1,0 +1,165 @@
+(mac defp (name args 'body)
+  `(def ,name ,args
+     (fn (xs i)
+       ,@body)))
+
+(assign eof (fn (xs i)
+	      (lif (is xs.length i)
+		   (list true i)
+		   `((no-eof)))))
+
+(defp one-of (ys)
+  (let x (get xs i)
+    (if (some x ys)
+	(list x (+ i 1))
+	`((one-of ,ys)))))
+
+(defp none-of (ys)
+  (let x (get xs i)
+    (if (! (some x ys))
+	(list x (+ i 1))
+	`((none-of ,ys)))))
+
+(defp por ('fs)
+  (let foo (map (fn (f) (f xs i)) fs)
+    (laif (index-by second foo)
+	 (get foo it)
+	 `((or ,@(apply cat foo))))))
+
+(defp chain ('fs)
+  (let res ()
+    ((afn (fs)
+       (lif fs
+	    (let foo ((get fs 0) xs i)
+	      (if (is foo.length 2)
+		 (do
+		   (res.push (get foo 0))
+		   (= i (get foo 1))
+		   (self (slice fs 1)))
+		 `((at ,i ,@foo))))
+	    (list res i)))
+     fs)))
+
+(defp pstr (s)
+  (if (is (xs.substr i s.length) s)
+      (list s (+ i s.length))
+      `((,s))))
+
+(defp many (f)
+  (with (res ()
+	 foo undefined)
+    (while (do
+	     (= foo (f xs i))
+	     (is foo.length 2))
+      (res.push (get foo 0))
+      (= i (get foo 1)))
+    (list res i)))
+
+(defp transform (f p)
+  (let foo (p xs i)
+    (if (is foo.length 2)
+	(list (f (get foo 0)) (get foo 1))
+	foo)))
+
+(mac transp (arg body p)
+  `(transform (fn (,arg)
+		,body)
+	      ,p))
+
+(def many1 (f)
+  (transp (x xs)
+	  `(,x ,@xs)
+	  (chain f (many f))))
+
+(assign pnothing (fn (xs i)
+		   (list null i)))
+
+(def optional (f)
+  (por f pnothing))
+
+(def sep-by1 (fa fb)
+  (transform (fn ((x xs))
+	       `(,x ,@(map second xs)))
+	     (chain fa (many (chain fb fa)))))
+
+(def sep-by (fa fb)
+  (por (sep-by1 fa fb)
+       (transp () () pnothing)))
+
+(defp prange (a b)
+  (let x (get xs i)
+    (if (<= a x b)
+	(list x (+ i 1))
+	`((range ,a ,b)))))
+
+(defp dbgp (f)
+  (let foo (f xs i)
+    (prn xs i foo)
+    foo))
+
+(assign alpha (por (prange 'a 'z) (prange 'A 'Z)))
+
+(assign digit (prange '"0" '"9"))
+
+(assign alphanum (por alpha digit))
+
+(assign symbol-char (por alpha (one-of '"!/%-|$<>_+*=")))
+
+(assign symbol (por (transform (fn ((x xs)) (apply str x xs))
+			       (chain symbol-char (many (por symbol-char digit))))
+		    (one-of '.)))
+
+(def between (a b c)
+  (transform (fn ((_ x _)) x)
+	     (chain a c b)))
+
+(def start-sep-end (fa fb)
+  (between fb fb (sep-by fa fb)))
+
+(defp pthunk (f)
+  ((f) xs i))
+
+(assign escaped (transform (fn ((_ x)) x)
+			   (chain (one-of '"\\")
+				  (por (transform (fn () '"\n")
+						  (one-of 'n))
+				       (transform (fn () '"\t")
+						  (one-of 't))
+				       (one-of '"\\\"")))))
+
+(assign string (transform (fn (xs)
+			    (apply str xs))
+			  (between (one-of '"\"")
+				   (one-of '"\"")
+				   (many (por escaped (none-of '"\\\""))))))
+
+(assign number (transform (fn ((sign a b))
+			    (zap lor sign '+)
+			    (zap lor b '"")
+			    (asnumber (str sign (apply str a) b)))
+			  (chain (optional (one-of '+-))
+				 (many1 digit)
+				 (optional (transform (fn ((dot digits))
+							(apply str dot digits))
+						      (chain (one-of '.) (many digit)))))))
+
+(def modifer (s)
+  (por (chain (pstr s) (pthunk (fn () expression2)))
+       (pstr s)))
+
+(assign expression (apply por number symbol string (pthunk (fn () plist))
+			  (map (fn (x) (modifer x)) '(' ` ,@ ,))))
+
+(assign expression2 (transform (fn (xs)
+				 (if (is xs.length 1)
+				     (get xs 0)
+				     `(. ,@xs)))
+			       (sep-by1 expression (one-of '.))))
+
+(assign sep (many (one-of '"\n\t ")))
+
+(assign expressions (start-sep-end expression2 sep))
+
+(assign plist (between (one-of '"(") (one-of  '")") expressions))
+
+(assign pfile (transp (file _) file (chain expressions eof)))
