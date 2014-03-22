@@ -9,7 +9,7 @@
 
 (assign reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
 
-(assign wholereps (obj if 'if_ else 'else_ with 'with_))
+(assign wholereps (obj if 'if_ else 'else_ with 'with_ var 'var_))
 
 (def munge (x)
   (if (or (! (astr x)) (is (get x 0) '"\""))

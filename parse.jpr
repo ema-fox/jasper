@@ -3,28 +3,43 @@
      (fn (xs i)
        ,@body)))
 
+(mac defletp (name args varname val 'body)
+  `(def ,name ,args
+     (let ,varname ,val
+       (fn (xs i)
+	 ,@body))))
+
 (assign eof (fn (xs i)
 	      (lif (is xs.length i)
 		   (list true i)
-		   `((no-eof)))))
+		   '((no-eof)))))
 
-(defp one-of (ys)
+(defletp one-of (ys)
+  err `((one-of ,ys))
   (let x (get xs i)
     (if (some x ys)
 	(list x (+ i 1))
-	`((one-of ,ys)))))
+	err)))
 
-(defp none-of (ys)
+(defletp none-of (ys)
+  err `((none-of ,ys))
   (let x (get xs i)
     (if (! (some x ys))
 	(list x (+ i 1))
-	`((none-of ,ys)))))
+	err)))
 
 (defp por ('fs)
-  (let foo (map (fn (f) (f xs i)) fs)
-    (laif (index-by second foo)
-	 (get foo it)
-	 `((or ,@(apply cat foo))))))
+  (with (errs ()
+	 j 0
+	 res false)
+    (while (and (< j fs.length) (no res))
+      (let foo ((get fs j) xs i)
+	(lif (get foo 1)
+	     (= res foo)
+	     (do
+	       (errs.push (get foo 0))
+	       (++ j)))))
+    (lor res `((or ,@errs)))))
 
 (defp chain ('fs)
   (let res ()
@@ -40,10 +55,11 @@
 	    (list res i)))
      fs)))
 
-(defp pstr (s)
+(defletp pstr (s)
+  err `((,s))
   (if (is (xs.substr i s.length) s)
       (list s (+ i s.length))
-      `((,s))))
+      err))
 
 (defp many (f)
   (with (res ()
@@ -86,11 +102,12 @@
   (por (sep-by1 fa fb)
        (transp () () pnothing)))
 
-(defp prange (a b)
+(defletp prange (a b)
+   err `((range ,a ,b))
   (let x (get xs i)
     (if (<= a x b)
 	(list x (+ i 1))
-	`((range ,a ,b)))))
+	err)))
 
 (defp dbgp (f)
   (let foo (f xs i)
@@ -100,8 +117,6 @@
 (assign alpha (por (prange 'a 'z) (prange 'A 'Z)))
 
 (assign digit (prange '"0" '"9"))
-
-(assign alphanum (por alpha digit))
 
 (assign symbol-char (por alpha (one-of '"!/%-|$<>_+*=")))
 

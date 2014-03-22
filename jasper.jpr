@@ -9,8 +9,8 @@
 (mac def (name 'argsnbody)
   (list 'assign name ((list 'fun name).concat argsnbody)))
 
-(def cat ('xs)
-  (().concat.apply () xs))
+(def cat ()
+  (().concat.apply () arguments))
 
 (def join (xs x)
   (().join.call xs x))
@@ -67,17 +67,28 @@
 (def quote (a)
   (JSON.stringify a))
 
+(def catmac (xs)
+  (if (xs.every (fun "" (x)
+		  (and (alist x) (is (get x 0) 'list))))
+      (cat '(list) (mapcat (fun "" ((_ 'ys))
+			     ys)
+			   xs))
+      (cat '(cat) xs)))
+
 (def runqq (a)
   (if (alist a)
       (if (is (get a 0) ',@)
 	  (get a 1)
 	  (is (get a 0) ',)
 	  (list 'list (get a 1))
-	  (list 'list (cat '(cat) (map runqq a))))
+	  (list 'list (catmac (map runqq a))))
       (cat '(list) (quote a))))
 
 (mac ` (a)
-    (list 'get (runqq a) 0))
+  (let xs (runqq a)
+    (if (and (alist xs) (is (get xs 0) 'list))
+	(get xs 1)
+	(list 'get xs 0))))
 
 (mac fn (args 'body)
   `(fun "" ,args ,@body))
@@ -125,8 +136,8 @@
 
 (mac awhile (cond 'body)
   `(let it undefined
-     `(while (= it ,cond)
-	,@body)))
+     (while (= it ,cond)
+       ,@body)))
 
 (def listify (x)
   (if (alist x)
