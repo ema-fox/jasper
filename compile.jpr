@@ -113,6 +113,9 @@
 (def rawwhile (cond 'body)
   (str '"function () {while (" (rendex cond) '") {\n    " (apply commaop body) '";\n}}()"))
 
+(def rawcatch (name form 'body)
+  (str '"function () {try{\n    return " (rendex form) '"} catch (" (rendex name) '") {\n    return " (apply commaop body) '";\n}}()"))
+
 (def funcall (name args)
   (str (rendex name) '"(" (apply commaop args) '")"))
 
@@ -137,7 +140,8 @@
 	 '"    return " (rendex body) '"\n}")))
 
 (assign exprenderers (obj get rawget rawfun rawfun ' quote ++ pp while rawwhile
-			rawif rawif do commaop asnumber r-asnumber))
+			  rawif rawif do commaop asnumber r-asnumber
+			  catch rawcatch))
 
 (map (fn ((name op id))
        (= (get exprenderers name) (fn ('xs)
@@ -200,22 +204,25 @@
   (apply (Function (map first env) code)
 	 (map second env)))
 
+(def compile-form (code doeval)
+  (let foo (macex macs code)
+    (if (is (get foo 0) 'assign)
+	(let quux (rendex (get foo 2))
+	  (env.push (list (munge (get foo 1))
+			  (eval-with (str '"return " quux) env)))
+	  (str '"var " (munge (get foo 1)) '" = " quux '";\n"))
+	(is (get foo 0) 'assign-mac)
+	(let quux (rendex (get foo 2))
+	  (= (get macs (get foo 1))
+	     (eval-with (str '"return " quux) env))
+	  (str (JSON.stringify quux) '";\n"))
+	(let quux (str (rendex foo) '";\n")
+	  (if doeval
+	      (eval-with (str '"return " quux) env)
+	      quux)))))
+
 (def compile (code)
-  (let res '"\"use strict\";\n"
-    (each bar code
-      (let foo (macex macs bar)
-	(if (is (get foo 0) 'assign)
-	    (let quux (rendex (get foo 2))
-	      (= res (str res '"var " (munge (get foo 1)) '" = " quux '";\n"))
-	      (env.push (list (munge (get foo 1))
-			      (eval-with (str '"return " quux) env))))
-	    (is (get foo 0) 'assign-mac)
-	    (let quux (rendex (get foo 2))
-	      (= res (str res (JSON.stringify quux) '";\n"))
-	      (= (get macs (get foo 1))
-	         (eval-with (str '"return " quux) env)))
-	    (= res (str res (rendex foo) '";\n")))))
-    res))
+  (join `("\"use strict\";\n" ,@(map compile-form code)) '""))
 
 (def parse (data f)
   (let foo (pfile (str data) 0)
@@ -241,10 +248,24 @@
 		     (if (res.every (fn (y) (! (is y undefined))))
 			 (f res))))))))
 
-(assign files (slice process.argv 2))
+(assign run-repl (is (get process.argv 2) '-i))
+
+(assign files (slice process.argv (if run-repl 3 2)))
 
 (def now ()
   (/ ((new Date).getTime) 1000))
+
+
+(def repl ()
+  (let rl ((require 'readline).createInterface (obj input process.stdin
+						    output process.stdout))
+    (rl.setPrompt '"¿ ")
+    (rl.prompt)
+    (callback (rl.on 'line) (line)
+      (callback (parse line) ((code))
+	(prn (catch e (compile-form code true)
+	       e.stack))
+	(rl.prompt)))))
 
 (assign start (now))
 
@@ -257,6 +278,10 @@
 				 `(,(str _dirname '"/jasper.jpr") ,@files)))
 	  (codes)
   (prn (- (now) start))
-  (let code (apply cat codes)
-    (fs.writeFileSync (str (get files (- files.length 1)) '".js") (compile code)))
-  (prn (- (now) start)))
+  (with (code (apply cat codes)
+	 output (compile code))
+    (if (no run-repl)
+	(fs.writeFileSync (str (get files (- files.length 1)) '".js") output)))
+  (prn (- (now) start))
+  (if run-repl
+      (repl)))
