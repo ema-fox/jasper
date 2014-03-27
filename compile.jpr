@@ -9,7 +9,7 @@
 
 (assign reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
 
-(assign wholereps (obj if 'if_ else 'else_ with 'with_ var 'var_))
+(assign wholereps (obj if 'if_ else 'else_ with 'with_ var 'var_ case 'case_))
 
 (def munge (x)
   (if (or (! (astr x)) (is (get x 0) '"\""))
@@ -204,22 +204,33 @@
   (apply (Function (map first env) code)
 	 (map second env)))
 
-(def compile-form (code doeval)
-  (let foo (macex macs code)
-    (if (is (get foo 0) 'assign)
-	(let quux (rendex (get foo 2))
-	  (env.push (list (munge (get foo 1))
-			  (eval-with (str '"return " quux) env)))
-	  (str '"var " (munge (get foo 1)) '" = " quux '";\n"))
-	(is (get foo 0) 'assign-mac)
-	(let quux (rendex (get foo 2))
-	  (= (get macs (get foo 1))
-	     (eval-with (str '"return " quux) env))
-	  (str (JSON.stringify quux) '";\n"))
-	(let quux (str (rendex foo) '";\n")
-	  (if doeval
-	      (eval-with (str '"return " quux) env)
-	      quux)))))
+(def eval-form (verb arg code)
+  ((case verb
+     assign (fn (x) (env.push (list (munge arg) x)))
+     assign-mac (fn (x) (= (get macs arg) x))
+     run idfn)
+   (eval-with (str '"return " code) env)))
+
+(def only-compile-form (verb arg code)
+  (str ((case verb
+	  assign (fn (x) (str '"var " (munge arg) '" = " x))
+	  assign-mac JSON.stringify
+	  run idfn)
+	code) '";\n"))
+
+(def compile-helper (code)
+  (with (foo (macex macs code)
+	 (verb arg bar) (if (some (get foo 0) '(assign assign-mac))
+			    foo
+			    (list 'run null foo))
+	 jscode (rendex bar))
+    (list verb arg jscode)))
+
+(def compile-form (code)
+  (let foo (compile-helper code)
+    (if (no (is (get foo 0) 'run))
+	(apply eval-form foo))
+    (apply only-compile-form foo)))
 
 (def compile (code)
   (join `("\"use strict\";\n" ,@(map compile-form code)) '""))
@@ -263,7 +274,7 @@
     (rl.prompt)
     (callback (rl.on 'line) (line)
       (callback (parse line) ((code))
-	(prn (catch e (compile-form code true)
+	(prn (catch e (apply eval-form (compile-helper code))
 	       e.stack))
 	(rl.prompt)))))
 

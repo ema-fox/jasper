@@ -9,6 +9,8 @@
 (mac def (name 'argsnbody)
   (list 'assign name ((list 'fun name).concat argsnbody)))
 
+(def idfn (x) x)
+
 (def cat ()
   (().concat.apply () arguments))
 
@@ -42,7 +44,6 @@
       (let length (apply Math.min (map1 (fun "" (x) x.length) xss))
 	(let ys ()
 	  (let i 0
-	    (console.warn length ys i xss)
 	    (while (< i length)
 	      (ys.push (apply f (map1 (fun "" (x) (get x i)) xss)))
 	      (++ i)))
@@ -149,6 +150,29 @@
 		  (listify names))
 	 ,@body))
 
+(mac zap (f place 'args)
+  `(= ,place (,f ,place ,@args)))
+
+(def pair (xs)
+  (with (ys ()
+	 i 0)
+    (while (< i xs.length)
+      (if (< (+ i 1) xs.length)
+	  (ys.push (list (get xs i) (get xs (+ i 1))))
+	  (ys.push (list (get xs i))))
+      (zap + i 2))
+    ys))
+
+(mac case (expr 'args)
+  (w/uniq g
+    `(let ,g ,expr
+       (if ,@(mapcat (fn (x)
+		       (if (is x.length 2)
+			   `((is ,g ',(get x 0))
+			     ,(get x 1))
+			   x))
+		     (pair args))))))
+
 (mac dbg ('xs)
   (w/uniq g
     `(let ,g ,xs
@@ -161,23 +185,11 @@
 	 `(let ,g ,(get xs 0)
 	    (lif ,g ,g (lor ,@(slice xs 1)))))))
 
-
 (mac do1 (x 'xs)
   (w/uniq g
     `(let ,g ,x
        ,@xs
        ,g)))
-
-(mac zap (f place 'args)
-  `(= ,place (,f ,place ,@args)))
-
-(def pair (xs)
-  (with (ys ()
-	 i 0)
-    (while (< i xs.length)
-      (ys.push (list (get xs i) (get xs (+ i 1))))
-      (zap + i 2))
-    ys))
 
 (def list2obj (args)
   (let res (Object.create null)
