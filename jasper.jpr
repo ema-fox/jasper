@@ -35,17 +35,20 @@
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
 
+(mac "[" ('body)
+  (list 'fun '"" (list '_) body))
+
 (def map1 (f xs)
-  (().map.call xs (fun "" (x) (f x))))
+  (().map.call xs [f _]))
 
 (def map (f 'xss)
   (if (is xss.length 1)
       (map1 f (get xss 0))
-      (let length (apply Math.min (map1 (fun "" (x) x.length) xss))
+      (let length (apply Math.min (map1 [. _ length] xss))
 	(let ys ()
 	  (let i 0
 	    (while (< i length)
-	      (ys.push (apply f (map1 (fun "" (x) (get x i)) xss)))
+	      (ys.push (apply f (map1 [get _ i] xss)))
 	      (++ i)))
 	  ys))))
 
@@ -69,8 +72,7 @@
   (JSON.stringify a))
 
 (def catmac (xs)
-  (if (xs.every (fun "" (x)
-		  (and (alist x) (is (get x 0) 'list))))
+  (if (xs.every [and (alist _) (is (get _ 0) 'list)])
       (cat '(list) (mapcat (fun "" ((_ 'ys))
 			     ys)
 			   xs))
@@ -146,7 +148,7 @@
       (list x)))
 
 (mac w/uniq (names 'body)
-  `(with ,(mapcat (fn (n) (list n `(gensym ',n)))
+  `(with ,(mapcat [list _ `(gensym ',_)]
 		  (listify names))
 	 ,@body))
 
@@ -166,11 +168,10 @@
 (mac case (expr 'args)
   (w/uniq g
     `(let ,g ,expr
-       (if ,@(mapcat (fn (x)
-		       (if (is x.length 2)
-			   `((is ,g ',(get x 0))
-			     ,(get x 1))
-			   x))
+       (if ,@(mapcat [if (is _.length 2)
+			 `((is ,g ',(get _ 0))
+			   ,(get _ 1))
+			 _]
 		     (pair args))))))
 
 (mac dbg ('xs)
@@ -219,7 +220,7 @@
 (def testify (test)
   (if (afunction test)
       test
-      (fn (x) (is test x))))
+      [is test _]))
 
 (mac no (x)
   `(lif ,x
@@ -250,7 +251,7 @@
 
 (def all (test xs)
   (let f (testify test)
-    (! (some (fn (x) (! (f x))) xs))))
+    (! (some [! (f _)] xs))))
 
 (def iso (x y)
   (or (is x y)

@@ -7,7 +7,8 @@
     (str (or prefix '"") '_g gensym-counter)
     (++ gensym-counter)))
 
-(assign reps (obj < '_lt + '_p = '_eq ` '_qq | '_pipe * '_st - '_d _ '__ / '_s))
+(assign reps (obj < '$lt + '$p = '$eq ` '$qq | '$pipe * '$st - '_ / '$s "[" '$br
+                  $ '$$))
 
 (assign wholereps (obj if 'if_ else 'else_ with 'with_ var 'var_ case 'case_))
 
@@ -15,9 +16,7 @@
   (if (or (! (astr x)) (is (get x 0) '"\""))
     x
     (or (get wholereps x)
-	(join (map (fn (y)
-		     (or (get reps y) y))
-		   x)
+	(join (map [or (get reps _) _] x)
 	      '""))))
 
 (def letmac (name val 'body)
@@ -27,9 +26,8 @@
 			  (first name)
 			  (= name (slice name 1)))
 			0)
-	     (before (rest 'after)) (split-by (fn (arg)
-						(and (alist arg)
-						     (is (get arg 0) '')))
+	     (before (rest 'after)) (split-by [and (alist _)
+						   (is (get _ 0) '')]
 					      name)
 	     rest (if rest
 		      (second rest)
@@ -52,9 +50,7 @@
       `(rawlet ,name ,val ,@body)))
 
 (def fun (name args 'body)
-  (let (before restnafter) (split-by (fn (arg) (and (alist arg)
-						    (is (get arg 0) '')))
-				     args)
+  (let (before restnafter) (split-by [and (alist _) (is (get _ 0) '')] args)
     (each arg before
       (when (alist arg)
 	(w/uniq sub
@@ -194,7 +190,7 @@
 	(= (get code 0) (macex macs (get code 0)))
 	(aif (get macs (get code 0))
 	     (macex macs (apply it (slice code 1)))
-	     (map (fn (x) (macex macs x)) code)))
+	     (map [macex macs _] code)))
       code))
 
 (assign env (list (list 'gensym gensym)
@@ -206,14 +202,14 @@
 
 (def eval-form (verb arg code)
   ((case verb
-     assign (fn (x) (env.push (list (munge arg) x)))
-     assign-mac (fn (x) (= (get macs arg) x))
+     assign [env.push (list (munge arg) _)]
+     assign-mac [= (get macs arg) _]
      run idfn)
    (eval-with (str '"return " code) env)))
 
 (def only-compile-form (verb arg code)
   (str ((case verb
-	  assign (fn (x) (str '"var " (munge arg) '" = " x))
+	  assign [str '"var " (munge arg) '" = " _]
 	  assign-mac JSON.stringify
 	  run idfn)
 	code) '";\n"))
@@ -256,7 +252,7 @@
     (cbs.map (fn (cb i)
 	       (cb (fn (x)
 		     (= (get res i) x)
-		     (if (res.every (fn (y) (! (is y undefined))))
+		     (if (res.every [! (is _ undefined)])
 			 (f res))))))))
 
 (assign run-repl (is (get process.argv 2) '-i))
@@ -286,7 +282,7 @@
 				       (if err
 					   (prn err)
 					   (parse data f)))))
-				 `(,(str _dirname '"/jasper.jpr") ,@files)))
+				 `(,(str __dirname '"/jasper.jpr") ,@files)))
 	  (codes)
   (prn (- (now) start))
   (with (code (apply cat codes)

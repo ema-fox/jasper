@@ -94,9 +94,9 @@
   (por f pnothing))
 
 (def sep-by1 (fa fb)
-  (transform (fn ((x xs))
-	       `(,x ,@(map second xs)))
-	     (chain fa (many (chain fb fa)))))
+  (transp (x xs)
+	  `(,x ,@(map second xs))
+	  (chain fa (many (chain fb fa)))))
 
 (def sep-by (fa fb)
   (por (sep-by1 fa fb)
@@ -120,13 +120,12 @@
 
 (assign symbol-char (por alpha (one-of '"!/%-|$<>_+*=")))
 
-(assign symbol (por (transform (fn ((x xs)) (apply str x xs))
-			       (chain symbol-char (many (por symbol-char digit))))
+(assign symbol (por (transp (x xs) (apply str x xs)
+			    (chain symbol-char (many (por symbol-char digit))))
 		    (one-of '.)))
 
 (def between (a b c)
-  (transform (fn ((_ x _)) x)
-	     (chain a c b)))
+  (transp (_ x _) x (chain a c b)))
 
 (def start-sep-end (fa fb)
   (between fb fb (sep-by fa fb)))
@@ -134,19 +133,16 @@
 (defp pthunk (f)
   ((f) xs i))
 
-(assign escaped (transform (fn ((_ x)) x)
-			   (chain (one-of '"\\")
-				  (por (transform (fn () '"\n")
-						  (one-of 'n))
-				       (transform (fn () '"\t")
-						  (one-of 't))
-				       (one-of '"\\\"")))))
+(assign escaped (transp (_ x) x
+			(chain (one-of '"\\")
+			       (por (transform (fn () '"\n") (one-of 'n))
+				    (transform (fn () '"\t") (one-of 't))
+				    (one-of '"\\\"")))))
 
-(assign string (transform (fn (xs)
-			    (apply str xs))
-			  (between (one-of '"\"")
-				   (one-of '"\"")
-				   (many (por escaped (none-of '"\\\""))))))
+(assign string (transp xs (apply str xs)
+		       (between (one-of '"\"")
+				(one-of '"\"")
+				(many (por escaped (none-of '"\\\""))))))
 
 (assign number (transform (fn ((sign a b))
 			    (zap lor sign '+)
@@ -154,27 +150,30 @@
 			    (asnumber (str sign (apply str a) b)))
 			  (chain (optional (one-of '+-))
 				 (many1 digit)
-				 (optional (transform (fn ((dot digits))
-							(apply str dot digits))
-						      (chain (one-of '.) (many digit)))))))
+				 (optional (transp (dot digits)
+						   (apply str dot digits)
+						   (chain (one-of '.) (many digit)))))))
 
 (def modifer (s)
   (por (chain (pstr s) (pthunk (fn () expression2)))
        (pstr s)))
 
 (assign expression (apply por number symbol string (pthunk (fn () plist))
-			  (map (fn (x) (modifer x)) '(' ` ,@ ,))))
+			  (pthunk (fn () bracket-list))
+			  (map [modifer _] '(' ` ,@ ,))))
 
-(assign expression2 (transform (fn (xs)
-				 (if (is xs.length 1)
-				     (get xs 0)
-				     `(. ,@xs)))
-			       (sep-by1 expression (one-of '.))))
+(assign expression2 (transp xs (if (is xs.length 1)
+				   (get xs 0)
+				   `(. ,@xs))
+			    (sep-by1 expression (one-of '.))))
 
 (assign sep (many (one-of '"\n\t ")))
 
 (assign expressions (start-sep-end expression2 sep))
 
 (assign plist (between (one-of '"(") (one-of  '")") expressions))
+
+(assign bracket-list (transp xs `("[" ,@xs)
+			     (between (one-of '"[") (one-of '"]") expressions)))
 
 (assign pfile (transp (file _) file (chain expressions eof)))
