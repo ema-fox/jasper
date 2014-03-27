@@ -223,7 +223,7 @@
 	 (verb arg bar) (if (some (get foo 0) '(assign assign-mac))
 			    foo
 			    (list 'run null foo))
-	 jscode (rendex bar))
+	 jscode (rendex `((rawfun "" () ,bar))))
     (list verb arg jscode)))
 
 (def compile-form (code)
