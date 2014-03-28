@@ -4,20 +4,20 @@
 
 (def gensym (prefix)
   (do1
-    (str (or prefix '"") '_g gensym-counter)
+    (str (or prefix "") '_g gensym-counter)
     (++ gensym-counter)))
 
-(assign reps (obj < '$lt + '$p = '$eq ` '$qq | '$pipe * '$st - '_ / '$s "[" '$br
+(assign reps (obj < '$lt + '$p = '$eq ` '$qq * '$st - '_ / '$s |[| '$br
                   $ '$$))
 
 (assign wholereps (obj if 'if_ else 'else_ with 'with_ var 'var_ case 'case_))
 
 (def munge (x)
-  (if (or (! (astr x)) (is (get x 0) '"\""))
+  (if (or (! (astr x)) (is (get x 0) "\""))
     x
     (or (get wholereps x)
 	(join (map [or (get reps _) _] x)
-	      '""))))
+	      ""))))
 
 (def letmac (name val 'body)
   (if (alist name)
@@ -87,7 +87,7 @@
 (assign macs (obj if ifmac fun fun let letmac lif lifmac))
 
 (def commaop ('code)
-  (join (map rendex code) '", "))
+  (join (map rendex code) ", "))
 
 (def delet (code)
   (if (alist code)
@@ -104,36 +104,38 @@
       (list () code)))
 
 (def rawif (cond then else_)
-  (str (rendex cond) '" ? " (rendex then) '" : " (rendex else_)))
+  (str (rendex cond) " ? " (rendex then) " : " (rendex else_)))
 
 (def rawwhile (cond 'body)
-  (str '"function () {while (" (rendex cond) '") {\n    " (apply commaop body) '";\n}}()"))
+  (str "function () {while (" (rendex cond) ") {\n    " (apply commaop body)
+       ";\n}}()"))
 
 (def rawcatch (name form 'body)
-  (str '"function () {try{\n    return " (rendex form) '"} catch (" (rendex name) '") {\n    return " (apply commaop body) '";\n}}()"))
+  (str "function () {try{\n    return " (rendex form) "} catch (" (rendex name)
+       ") {\n    return " (apply commaop body) ";\n}}()"))
 
 (def funcall (name args)
-  (str (rendex name) '"(" (apply commaop args) '")"))
+  (str (rendex name) "(" (apply commaop args) ")"))
 
 (def rawget (a b)
-  (str (rendex a) '"[" (rendex b) '"]"))
+  (str (rendex a) "[" (rendex b) "]"))
 
 (def quote (a)
   (JSON.stringify a))
 
 (def pp (a)
-  (str '"++" (rendex a)))
+  (str '++ (rendex a)))
 
 (def r-asnumber (a)
   (str '+ (rendex a)))
 
 (def rawfun (name args 'body)
   (let (names body) (delet (cat '(do) body))
-    (str '"function " (munge name) '" (" (apply commaop args) '") {\n"
+    (str "function " (munge name) " (" (apply commaop args) ") {\n"
 	 (if (is names.length 0)
-	     '""
-	     (str '"    var " (apply commaop names) '";\n"))
-	 '"    return " (rendex body) '"\n}")))
+	     ""
+	     (str "    var " (apply commaop names) ";\n"))
+	 "    return " (rendex body) "\n}")))
 
 (assign exprenderers (obj get rawget rawfun rawfun ' quote ++ pp while rawwhile
 			  rawif rawif do commaop asnumber r-asnumber
@@ -145,16 +147,16 @@
 					id
 					(join (map rendex xs) op)))))
      '((. . null)
-       (+ " + " 0)
-       (% " % " 0)
-       (- " - " 0)
-       (/ " / " 1)
-       (and " && " true)
-       (or " || " false)
-       (raw< " < " true)
-       (raw<= " <= " true)
-       (= " = " null)
-       (rawis " === " true)))
+       (+ | + | 0)
+       (% | % | 0)
+       (- | - | 0)
+       (/ | / | 1)
+       (and | && | true)
+       (or | \|\| | false)
+       (raw< | < | true)
+       (raw<= | <= | true)
+       (= | = | null)
+       (rawis | === | true)))
 
 (map (fn ((name op))
        (= (get macs name) (fn ('xs)
@@ -174,10 +176,11 @@
 (def rendex (code)
   (if (alist code)
       (if (is code.length 0)
-	  '"[]"
+	  "[]"
+	  (str "("
 	  (aif (get exprenderers (get code 0))
-	       (str '"(" (apply it (slice code 1)) '")")
-	       (str '"(" (funcall (get code 0) (slice code 1)) '")")))
+	       (apply it (slice code 1))
+	       (funcall (get code 0) (slice code 1))) ")"))
       (if (is code null)
 	  'null
 	  (is code undefined)
@@ -205,21 +208,21 @@
      assign [env.push (list (munge arg) _)]
      assign-mac [= (get macs arg) _]
      run idfn)
-   (eval-with (str '"return " code) env)))
+   (eval-with (str "return " code) env)))
 
 (def only-compile-form (verb arg code)
   (str ((case verb
-	  assign [str '"var " (munge arg) '" = " _]
+	  assign [str "var " (munge arg) " = " _]
 	  assign-mac JSON.stringify
 	  run idfn)
-	code) '";\n"))
+	code) ";\n"))
 
 (def compile-helper (code)
   (with (foo (macex macs code)
 	 (verb arg bar) (if (some (get foo 0) '(assign assign-mac))
 			    foo
 			    (list 'run null foo))
-	 jscode (rendex `((rawfun "" () ,bar))))
+	 jscode (rendex `((rawfun || () ,bar))))
     (list verb arg jscode)))
 
 (def compile-form (code)
@@ -229,7 +232,7 @@
     (apply only-compile-form foo)))
 
 (def compile (code)
-  (join `("\"use strict\";\n" ,@(map compile-form code)) '""))
+  (join `(|"use strict";\n| ,@(map compile-form code)) ""))
 
 (def parse (data f)
   (let foo (pfile (str data) 0)
@@ -266,7 +269,7 @@
 (def repl ()
   (let rl ((require 'readline).createInterface (obj input process.stdin
 						    output process.stdout))
-    (rl.setPrompt '"¿ ")
+    (rl.setPrompt "¿ ")
     (rl.prompt)
     (callback (rl.on 'line) (line)
       (callback (parse line) ((code))
@@ -282,13 +285,13 @@
 				       (if err
 					   (prn err)
 					   (parse data f)))))
-				 `(,(str __dirname '"/jasper.jpr") ,@files)))
+				 `(,(str __dirname "/jasper.jpr") ,@files)))
 	  (codes)
   (prn (- (now) start))
   (with (code (apply cat codes)
 	 output (compile code))
     (if (no run-repl)
-	(fs.writeFileSync (str (get files (- files.length 1)) '".js") output)))
+	(fs.writeFileSync (str (get files (- files.length 1)) ".js") output)))
   (prn (- (now) start))
   (if run-repl
       (repl)))

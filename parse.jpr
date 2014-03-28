@@ -116,9 +116,9 @@
 
 (assign alpha (por (prange 'a 'z) (prange 'A 'Z)))
 
-(assign digit (prange '"0" '"9"))
+(assign digit (prange "0" "9"))
 
-(assign symbol-char (por alpha (one-of '"!/%-|$<>_+*=")))
+(assign symbol-char (por alpha (one-of "!/%-$<>_+*=")))
 
 (assign symbol (por (transp (x xs) (apply str x xs)
 			    (chain symbol-char (many (por symbol-char digit))))
@@ -134,19 +134,24 @@
   ((f) xs i))
 
 (assign escaped (transp (_ x) x
-			(chain (one-of '"\\")
-			       (por (transform (fn () '"\n") (one-of 'n))
-				    (transform (fn () '"\t") (one-of 't))
-				    (one-of '"\\\"")))))
+			(chain (one-of "\\")
+			       (por (transform (fn () "\n") (one-of 'n))
+				    (transform (fn () "\t") (one-of 't))
+				    (one-of "\\\"|")))))
 
-(assign string (transp xs (apply str xs)
-		       (between (one-of '"\"")
-				(one-of '"\"")
-				(many (por escaped (none-of '"\\\""))))))
+(assign string (transp xs (list '' (apply str xs))
+		       (between (one-of "\"")
+				(one-of "\"")
+				(many (por escaped (none-of "\\\""))))))
+
+(assign piped-symbol (transp xs (apply str xs)
+		       (between (one-of "|")
+				(one-of "|")
+				(many (por escaped (none-of "\\\|"))))))
 
 (assign number (transform (fn ((sign a b))
 			    (zap lor sign '+)
-			    (zap lor b '"")
+			    (zap lor b "")
 			    (asnumber (str sign (apply str a) b)))
 			  (chain (optional (one-of '+-))
 				 (many1 digit)
@@ -159,7 +164,7 @@
        (pstr s)))
 
 (assign expression (apply por number symbol string (pthunk (fn () plist))
-			  (pthunk (fn () bracket-list))
+			  (pthunk (fn () bracket-list)) piped-symbol
 			  (map [modifer _] '(' ` ,@ ,))))
 
 (assign expression2 (transp xs (if (is xs.length 1)
@@ -167,13 +172,13 @@
 				   `(. ,@xs))
 			    (sep-by1 expression (one-of '.))))
 
-(assign sep (many (one-of '"\n\t ")))
+(assign sep (many (one-of "\n\t ")))
 
 (assign expressions (start-sep-end expression2 sep))
 
-(assign plist (between (one-of '"(") (one-of  '")") expressions))
+(assign plist (between (one-of "(") (one-of  ")") expressions))
 
-(assign bracket-list (transp xs `("[" ,@xs)
-			     (between (one-of '"[") (one-of '"]") expressions)))
+(assign bracket-list (transp xs `(|[| ,@xs)
+			     (between (one-of "[") (one-of "]") expressions)))
 
 (assign pfile (transp (file _) file (chain expressions eof)))

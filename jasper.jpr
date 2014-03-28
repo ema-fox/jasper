@@ -18,7 +18,7 @@
   (().join.call xs x))
 
 (def str ('xs)
-  (join xs '""))
+  (join xs ""))
 
 (def alist (x)
   (and x (is x.constructor Array)))
@@ -35,8 +35,8 @@
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
 
-(mac "[" ('body)
-  (list 'fun '"" (list '_) body))
+(mac |[| ('body)
+  (list 'fun "" (list '_) body))
 
 (def map1 (f xs)
   (().map.call xs [f _]))
@@ -58,7 +58,7 @@
       (is x undefined)
       'undefined
       (alist x)
-      (str '"(" (join (map sfy x) '" ") '")")
+      (str "(" (join (map sfy x) " ") ")")
       (str x)))
 
 (def prn (a 'as)
@@ -73,7 +73,7 @@
 
 (def catmac (xs)
   (if (xs.every [and (alist _) (is (get _ 0) 'list)])
-      (cat '(list) (mapcat (fun "" ((_ 'ys))
+      (cat '(list) (mapcat (fun || ((_ 'ys))
 			     ys)
 			   xs))
       (cat '(cat) xs)))
@@ -94,7 +94,7 @@
 	(list 'get xs 0))))
 
 (mac fn (args 'body)
-  `(fun "" ,args ,@body))
+  `(fun || ,args ,@body))
 
 (mac when (cond 'body)
   `(if ,cond (do ,@body)))
@@ -177,7 +177,7 @@
 (mac dbg ('xs)
   (w/uniq g
     `(let ,g ,xs
-       (prn ',xs '":" ,g)
+       (prn ',xs ":" ,g)
        ,g)))
 
 (mac lor ('xs)
@@ -262,7 +262,7 @@
   `(,@to (fn ,from ,@body)))
 
 
-'"non core:"
+"non core:"
 
 (assign sqrt Math.sqrt)
 (assign ** Math.pow)
