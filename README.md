@@ -10,10 +10,15 @@ It differs from javascript by
 - everything is an expression.
 
 After cloning this repo, get the compiler:
+
     $ wget ema-fox.github.io/jasper/compile.jpr.js
+    
 Compile your copy of the compiler:
+
     $ node compile.jpr.js parse.jpr compile.jpr
+    
 Run the repl:
+
     $ node compile.jpr.js -i
     ¿ (map [+ _ 1] '(1 2 3))
     (2 3 4)
