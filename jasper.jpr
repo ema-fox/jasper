@@ -261,17 +261,3 @@
 (mac callback (to from 'body)
   `(,@to (fn ,from ,@body)))
 
-
-"non core:"
-
-(assign sqrt Math.sqrt)
-(assign ** Math.pow)
-
-(def distance ((pa0 pa1) (pb0 pb1))
-  (sqrt (+ (** (- pb0 pa0) 2)
-	   (** (- pb1 pa1) 2))))
-
-(def plus ((pa0 pa1) (pb0 pb1))
-  (list (+ pa0 pb0) (+ pa1 pb1)))
-
-(assign ngbroffsets (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1)))
