@@ -10,7 +10,7 @@
 	 ,@body))))
 
 (assign eof (fn (xs i)
-	      (lif (is xs.length i)
+	      (if (is xs.length i)
 		   (list true i)
 		   '((no-eof)))))
 
@@ -34,7 +34,7 @@
 	 res false)
     (while (and (< j fs.length) (no res))
       (let foo ((get fs j) xs i)
-	(lif (get foo 1)
+	(if (get foo 1)
 	     (= res foo)
 	     (do
 	       (errs.push (get foo 0))
@@ -44,7 +44,7 @@
 (defp chain ('fs)
   (let res ()
     ((afn (fs)
-       (lif fs
+       (if fs
 	    (let foo ((get fs 0) xs i)
 	      (if (is foo.length 2)
 		 (do

@@ -64,27 +64,20 @@
 (def asbool (x)
   (w/uniq g
     `(let ,g ,x
-       (if (and (alist ,g) (is (, g).length 0))
+       (rawif (and (alist ,g) (is (, g).length 0))
 	   false
-	   (if (is ,g 0)
+	   (rawif (is ,g 0)
 	       true
 	       ,g)))))
 
 (def ifmac (cond then 'rest)
-  `(rawif ,cond ,then ,(if (is rest.length 0)
-			   null
-			   (is rest.length 1)
-			   (get rest 0)
-			   `(if ,@rest))))
-
-(def lifmac (cond then 'rest)
   `(rawif ,(asbool cond) ,then ,(if (is rest.length 0)
 				    null
 				    (is rest.length 1)
 				    (get rest 0)
-				    `(lif ,@rest))))
+				    `(if ,@rest))))
 
-(assign macs (obj if ifmac fun fun let letmac lif lifmac))
+(assign macs (obj fun fun let letmac if ifmac))
 
 (def commaop ('code)
   (join (map rendex code) ", "))
@@ -236,7 +229,7 @@
 
 (def parse (data f)
   (let foo (pfile (str data) 0)
-    (lif (second foo)
+    (if (second foo)
 	 (f (first foo))
 	 (prn (first foo)))))
 

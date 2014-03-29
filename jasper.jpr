@@ -21,7 +21,7 @@
   (join xs ""))
 
 (def alist (x)
-  (and x (is x.constructor Array)))
+  (rawif x (is x.constructor Array)))
 
 (def astr (x)
   (is (typeof x) 'string))
@@ -100,11 +100,11 @@
   `(if ,cond (do ,@body)))
 
 (mac land ('xs)
-  (lif (is xs.length 0)
+  (if (is xs.length 0)
        true
        (is xs.length 1)
        (get xs 0)
-       `(lif ,(get xs 0)
+       `(if ,(get xs 0)
 	     (land ,@(slice xs 1)))))
 
 (def subsname (name sub code)
@@ -132,7 +132,7 @@
 
 (mac laif (expr then else)
   `(let it ,expr
-     (lif it ,then ,else)))
+     (if it ,then ,else)))
 
 (mac afn (args 'body)
   `(fun self ,args ,@body))
@@ -181,10 +181,10 @@
        ,g)))
 
 (mac lor ('xs)
-  (lif xs
+  (if xs
        (w/uniq g
 	 `(let ,g ,(get xs 0)
-	    (lif ,g ,g (lor ,@(slice xs 1)))))))
+	    (if ,g ,g (lor ,@(slice xs 1)))))))
 
 (mac do1 (x 'xs)
   (w/uniq g
@@ -226,7 +226,7 @@
       [is test _]))
 
 (mac no (x)
-  `(lif ,x
+  `(if ,x
 	false
 	true))
 
@@ -234,7 +234,7 @@
   (with (f (testify test)
 	 index false)
     (each-while (i v) xs (no index)
-      (lif (f v)
+      (if (f v)
 	   (= index i)))
     index))
 
