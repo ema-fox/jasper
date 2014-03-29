@@ -203,7 +203,7 @@
                             `(list ',k ,v))
                           (pair args)))))
 
-(mac each (iv xs 'body)
+(mac each-while (iv xs cond 'body)
   (with (i null v null)
     (if (alist iv)
 	(do
@@ -213,9 +213,12 @@
 	  (= i (gensym i))
 	  (= v iv)))
     `(let ,i 0
-       (while (< ,i (, xs).length)
+       (while (and (< ,i (, xs).length) ,cond)
 	 ,@(subsname v `(get ,xs ,i) body)
 	 (++ ,i)))))
+
+(mac each (iv xs 'body)
+  `(each-while ,iv ,xs true ,@body))
 
 (def testify (test)
   (if (afunction test)
@@ -230,10 +233,14 @@
 (def index-by (test xs)
   (with (f (testify test)
 	 index false)
-    (each (i v) xs
-      (lif (land (no index) (f v))
+    (each-while (i v) xs (no index)
+      (lif (f v)
 	   (= index i)))
     index))
+
+(def find (test xs)
+  (laif (index-by test xs)
+	(get xs it)))
 
 (def split-by (f xs)
   (let i (index-by f xs)
@@ -244,8 +251,8 @@
 (def some (test xs)
   (with (f (testify test)
 	 res false)
-    (each x xs
-      (laif (land (! res) (f x))
+    (each-while x xs (no res)
+      (laif (f x)
 	    (= res it)))
     res))
 
