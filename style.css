@@ -1,0 +1,51 @@
+#sidebar {
+    overflow: auto;
+    height: 100%;
+    float: right;
+    width: 30%;
+    background-color: #fdf6e3;
+    color: #657b83;
+}
+
+#sidebar-inner {
+    margin: 1em;
+}
+
+.jquery-console-nofocus .jquery-console-cursor {
+    color: #002b36;
+    background-color: #586e75;
+}
+
+.jquery-console-focus .jquery-console-cursor {
+    color: #002b36;
+    background-color: #859900;
+}
+
+.jquery-console-inner {
+    font-family: monospace;
+    padding: 0.5em;
+}
+
+#console {
+    overflow: auto;
+    height: 100%;
+    background-color: #002b36;
+    color: #839496;
+}
+
+.jquery-console-prompt-label {
+    color: #b58900;
+}
+
+.jquery-console-prompt {
+    color: #859900;
+}
+
+.code {
+    color: #859900;
+    font-family: monospace;
+}
+
+body {
+    margin: 0px;
+}
