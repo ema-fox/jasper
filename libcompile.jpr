@@ -223,3 +223,11 @@
 
 (def compile (code)
   (join `(|"use strict";\n| ,@(map compile-form code)) ""))
+
+(def cmd-handler (xs)
+  (join (first ((transp forms
+			(map [catch e (sfy (apply eval-form (compile-helper _)))
+		               (str e "\n" e.stack)]
+			     forms)
+			pfile) xs 0))
+	" "))

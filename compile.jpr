@@ -26,10 +26,8 @@
     (rl.setPrompt "¿ ")
     (rl.prompt)
     (callback (rl.on 'line) (line)
-      (callback (parse line) ((code))
-	(prn (catch e (apply eval-form (compile-helper code))
-	       e.stack))
-	(rl.prompt)))))
+      (prn (cmd-handler line))
+      (rl.prompt))))
 
 (assign start (now))
 
