@@ -1,5 +1,3 @@
-(assign fs (require 'fs))
-
 (assign gensym-counter 0)
 
 (def gensym (prefix)
@@ -189,8 +187,7 @@
 	     (map [macex macs _] code)))
       code))
 
-(assign env (list (list 'gensym gensym)
-		  (list 'require require)))
+(assign env (list (list 'gensym gensym)))
 
 (def eval-with (code env)
   (apply (Function (map first env) code)
@@ -233,16 +230,6 @@
 	 (f (first foo))
 	 (prn (first foo)))))
 
-(def read-first-file (paths f)
-  ((fun self (ps)
-     (if (is ps.length 0)
-	 (f null)
-	 (callback (fs.readFile (first ps)) (err data)
-	   (if err
-	       (self (slice ps 1))
-	       (f data)))))
-   paths))
-
 (def gather-callbacks (cbs f)
   (let res (map (fn () undefined) cbs)
     (cbs.map (fn (cb i)
@@ -272,19 +259,20 @@
 
 (assign start (now))
 
-(callback (gather-callbacks (map (fn (file)
-				   (fn (f)
-				     (callback (fs.readFile file) (err data)
-				       (if err
-					   (prn err)
-					   (parse data f)))))
-				 `(,(str __dirname "/jasper.jpr") ,@files)))
-	  (codes)
-  (prn (- (now) start))
-  (with (code (apply cat codes)
-	 output (compile code))
-    (if (no run-repl)
-	(fs.writeFileSync (str (get files (- files.length 1)) ".js") output)))
-  (prn (- (now) start))
-  (if run-repl
-      (repl)))
+(let fs (require 'fs)
+  (callback (gather-callbacks (map (fn (file)
+				     (fn (f)
+				       (callback (fs.readFile file) (err data)
+					 (if err
+					     (prn err)
+					     (parse data f)))))
+				   `(,(str __dirname "/jasper.jpr") ,@files)))
+	    (codes)
+    (prn (- (now) start))
+    (with (code (apply cat codes)
+		output (compile code))
+      (if (no run-repl)
+	  (fs.writeFileSync (str (get files (- files.length 1)) ".js") output)))
+    (prn (- (now) start))
+    (if run-repl
+	(repl))))
