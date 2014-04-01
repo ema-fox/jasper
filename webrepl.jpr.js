@@ -668,55 +668,21 @@ var compile = ((function  () {
     return (((join((cat((list("\"use strict\";\n")), (map(compile_form, code)))), ("")))))
 }))
 })());
-var parse = ((function  () {
-    return ((function parse (data, f) {
-    var g_g461_g462, foo_g463;
-    return ((((foo_g463 = (pfile((str(data)), 0))), (((g_g461_g462 = (second(foo_g463))), (((alist(g_g461_g462)) && ((g_g461_g462.length) === 0)) ? false : ((g_g461_g462 === 0) ? true : g_g461_g462))) ? (f((first(foo_g463)))) : (prn((first(foo_g463))))))))
-}))
-})());
-var read_first_file = ((function  () {
-    return ((function read_first_file (paths, f) {
-    return ((((function self (ps) {
-    var g_g464_g466;
-    return (((((g_g464_g466 = ((ps.length) === 0)), (((alist(g_g464_g466)) && ((g_g464_g466.length) === 0)) ? false : ((g_g464_g466 === 0) ? true : g_g464_g466))) ? (f(null)) : ((fs.readFile)((first(ps)), (function  (err, data) {
-    var g_g465_g467;
-    return (((((g_g465_g467 = err), (((alist(g_g465_g467)) && ((g_g465_g467.length) === 0)) ? false : ((g_g465_g467 === 0) ? true : g_g465_g467))) ? (self((slice(ps, 1)))) : (f(data)))))
-}))))))
-})(paths))))
-}))
-})());
-var gather_callbacks = ((function  () {
-    return ((function gather_callbacks (cbs, f) {
-    var res_g469;
-    return ((((res_g469 = (map((function  () {
-    return ((undefined))
-}), cbs))), ((cbs.map)((function  (cb, i) {
-    return (((cb((function  (x) {
-    var g_g468_g470;
-    return ((((res_g469[i]) = x), (((g_g468_g470 = ((res_g469.every)((function  (_) {
-    return (((!((_ === undefined)))))
-})))), (((alist(g_g468_g470)) && ((g_g468_g470.length) === 0)) ? false : ((g_g468_g470 === 0) ? true : g_g468_g470))) ? (f(res_g469)) : null)))
-})))))
-}))))))
-}))
-})());
-var now = ((function  () {
-    return ((function now () {
-    return ((((((new(Date)).getTime)()) / 1000)))
-}))
-})());
 var cmd_handler = ((function  () {
     return ((function cmd_handler (xs) {
-    var g_g471_g472, foo_g473;
-    return ((((foo_g473 = (pfile(xs, 0))), (((g_g471_g472 = ((foo_g473.length) === 2)), (((alist(g_g471_g472)) && ((g_g471_g472.length) === 0)) ? false : ((g_g471_g472 === 0) ? true : g_g471_g472))) ? (function () {try{
-    return (sfy((apply(eval_form, (compile_helper((first((first(foo_g473))))))))))} catch (e) {
-    return (e.stack);
-}}()) : (sfy(foo_g473))))))
+    return (((join((first(((transform((function  (forms) {
+    return (((map((function  (_) {
+    return (((function () {try{
+    return (sfy((apply(eval_form, (compile_helper(_))))))} catch (e) {
+    return (str(e, ("\n"), (e.stack)));
+}}())))
+}), forms))))
+}), pfile))(xs, 0)))), (" ")))))
 }))
 })());
 ((function  () {
     return ((((jQuery()).ready)((function  (_) {
-    var console_g474;
-    return ((((console_g474 = (jQuery(("#console")))), ((console_g474.console)((list2obj((list((list(("autofocus"), true)), (list(("commandHandle"), cmd_handler)), (list(("promptLabel"), ("¿ "))))))))), (compile(jasper_code)))))
+    var console_g461;
+    return ((((console_g461 = (jQuery(("#console")))), ((console_g461.console)((list2obj((list((list(("autofocus"), true)), (list(("commandHandle"), cmd_handler)), (list(("promptLabel"), ("¿ "))))))))), (compile(jasper_code)))))
 }))))
 })());
