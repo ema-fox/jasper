@@ -1,0 +1,13 @@
+(def cmd-handler (xs)
+  (let foo (pfile xs 0)
+    (if (is foo.length 2)
+	(catch e (sfy (apply eval-form (compile-helper (first (first foo)))))
+	  e.stack)
+	(sfy foo))))
+
+((jQuery).ready
+ [let console (jQuery "#console")
+   (console.console (obj autofocus true commandHandle cmd-handler
+			 promptLabel "¿ "))
+   (compile jasper-code)
+   ])
