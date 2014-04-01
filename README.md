@@ -15,7 +15,7 @@ After cloning this repo, get the compiler:
     
 Compile your copy of the compiler:
 
-    $ node compile.jpr.js parse.jpr compile.jpr
+    $ node compile.jpr.js parse.jpr libcompile.jpr compile.jpr
     
 Run the repl:
 
