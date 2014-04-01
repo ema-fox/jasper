@@ -35,6 +35,9 @@
 (def apply (f 'argsa argsb)
   (f.apply null (cat argsa argsb)))
 
+(def apply-method (f o 'argsa argsb)
+  (f.apply o (cat argsa argsb)))
+
 (mac |[| ('body)
   (list 'fun "" (list '_) body))
 
@@ -62,7 +65,7 @@
       (str x)))
 
 (def prn (a 'as)
-  (apply console.log (sfy a) (map sfy as))
+  (apply-method console.log console (sfy a) (map sfy as))
   a)
 
 (def mapcat (f 'xss)
