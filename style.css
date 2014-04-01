@@ -31,6 +31,7 @@
     height: 100%;
     background-color: #002b36;
     color: #839496;
+    word-wrap: break-word;
 }
 
 .jquery-console-prompt-label {
