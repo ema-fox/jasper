@@ -3,182 +3,151 @@
      (fn (xs i)
        ,@body)))
 
-(mac defletp (name args varname val 'body)
-  `(def ,name ,args
-     (let ,varname ,val
-       (fn (xs i)
-	 ,@body))))
-
-(assign eof (fn (xs i)
-	      (if (is xs.length i)
-		   (list true i)
-		   '((no-eof)))))
-
-(defletp one-of (ys)
-  err `((one-of ,ys))
-  (let x (get xs i)
-    (if (some x ys)
-	(list x (+ i 1))
-	err)))
-
-(defletp none-of (ys)
-  err `((none-of ,ys))
-  (let x (get xs i)
-    (if (! (some x ys))
-	(list x (+ i 1))
-	err)))
-
-(defp por ('fs)
-  (with (errs ()
-	 j 0
-	 res false)
-    (while (and (< j fs.length) (no res))
-      (let foo ((get fs j) xs i)
-	(if (get foo 1)
-	     (= res foo)
-	     (do
-	       (errs.push (get foo 0))
-	       (++ j)))))
-    (lor res `((or ,@errs)))))
-
-(defp chain ('fs)
-  (let res ()
-    ((afn (fs)
-       (if fs
-	    (let foo ((get fs 0) xs i)
-	      (if (is foo.length 2)
-		 (do
-		   (res.push (get foo 0))
-		   (= i (get foo 1))
-		   (self (slice fs 1)))
-		 `((at ,i ,@foo))))
-	    (list res i)))
-     fs)))
-
-(defletp pstr (s)
-  err `((,s))
-  (if (is (xs.substr i s.length) s)
-      (list s (+ i s.length))
-      err))
-
-(defp many (f)
-  (with (res ()
-	 foo undefined)
-    (while (do
-	     (= foo (f xs i))
-	     (is foo.length 2))
-      (res.push (get foo 0))
-      (= i (get foo 1)))
-    (list res i)))
-
 (defp transform (f p)
-  (let foo (p xs i)
-    (if (is foo.length 2)
-	(list (f (get foo 0)) (get foo 1))
-	foo)))
+  (let (err res i) (p xs i)
+    (if err
+	(list err)
+	(list false (f res) i))))
 
 (mac transp (arg body p)
   `(transform (fn (,arg)
 		,body)
 	      ,p))
 
-(def many1 (f)
-  (transp (x xs)
-	  `(,x ,@xs)
-	  (chain f (many f))))
-
-(assign pnothing (fn (xs i)
-		   (list null i)))
-
-(def optional (f)
-  (por f pnothing))
-
-(def sep-by1 (fa fb)
-  (transp (x xs)
-	  `(,x ,@(map second xs))
-	  (chain fa (many (chain fb fa)))))
-
-(def sep-by (fa fb)
-  (por (sep-by1 fa fb)
-       (transp () () pnothing)))
-
-(defletp prange (a b)
-   err `((range ,a ,b))
-  (let x (get xs i)
-    (if (<= a x b)
-	(list x (+ i 1))
-	err)))
-
 (defp dbgp (f)
   (let foo (f xs i)
-    (prn xs i foo)
+    (prn i foo)
     foo))
 
-(assign alpha (por (prange 'a 'z) (prange 'A 'Z)))
+(def adigit (x)
+  (<= "0" x "9"))
 
-(assign digit (prange "0" "9"))
+(def asymbol-char (x)
+  (or (<= 'a x 'z) (<= 'A x 'Z) (adigit x) (some x '!/%-$<>_+*=)))
 
-(assign symbol-char (por alpha (one-of "!/%-$<>_+*=")))
+(def read-number (xs i)
+  (let end i
+    (if (some (get xs end) '+-) (++ end))
+    (zap each-from-while end x xs (adigit x))
+    (when (is (get xs end) '.)
+      (++ end)
+      (zap each-from-while end x xs (adigit x)))
+    (list false (asnumber (xs.substring i end)) end)))
 
-(assign symbol (por (transp (x xs) (apply str x xs)
-			    (chain symbol-char (many (por symbol-char digit))))
-		    (one-of '.)))
+(def read-symbol (xs i)
+  (let end (+ i 1)
+    (zap each-from-while end x xs (asymbol-char x))
+    (list false (xs.substring i end) end)))
 
-(def between (a b c)
-  (transp (_ x _) x (chain a c b)))
+(def symbol/number (xs i)
+  ((if (adigit (get xs (+ i 1)))
+       read-number
+       read-symbol)
+   xs i))
 
-(def start-sep-end (fa fb)
-  (between fb fb (sep-by fa fb)))
+(def make-error (xs i msg)
+  (let foo ((xs.substring 0 i).split "\n")
+    `((,@msg ,(get xs i) at line ,foo.length collumn ,(get foo (- foo.length 1)).length))))
+
+(def read-escaped (xs i)
+  (let end (+ i 1)
+    (aif (case (get xs end)
+	   n "\n"
+	   t "\t"
+	   (if (some (get xs end) "\\\"|")
+	       (get xs end)))
+	 (list false it (+ end 1))
+	 (make-error xs end '(no escape char)))))
+
+(defp many-delimited (f delimeter)
+  (++ i)
+  (with (res ()
+	 err false)
+    (while (no (or (is (get xs i) delimeter) err))
+      (let (newerr bar newi) (f xs i)
+	(if newerr
+	    (= err (list newerr))
+	    (do
+	      (res.push bar)
+	      (= i newi)))))
+    (or err (list false res (+ i 1)))))
+
+(assign seps "\n\t ")
 
 (defp pthunk (f)
   ((f) xs i))
 
-(assign escaped (transp (_ x) x
-			(chain (one-of "\\")
-			       (por (transform (fn () "\n") (one-of 'n))
-				    (transform (fn () "\t") (one-of 't))
-				    (one-of "\\\"|")))))
+(assign read-list (many-delimited (pthunk (fn () dotted-expression)) ")"))
 
-(assign string (transp xs (list '' (apply str xs))
-		       (between (one-of "\"")
-				(one-of "\"")
-				(many (por escaped (none-of "\\\""))))))
+(assign read-bracket-list
+	(transp xs `(|[| ,@xs)
+		(many-delimited (pthunk (fn () dotted-expression)) "]")))
 
-(assign piped-symbol (transp xs (apply str xs)
-		       (between (one-of "|")
-				(one-of "|")
-				(many (por escaped (none-of "\\\|"))))))
+(defp string-part (delimeter)
+  (if (is (get xs i) "\\")
+      (read-escaped xs i)
+      (let end (each-from-while i x xs (no (some x (list "\\" delimeter))))
+	(list false (xs.substring i end) end))))
 
-(assign number (transform (fn ((sign a b))
-			    (zap lor sign '+)
-			    (zap lor b "")
-			    (asnumber (str sign (apply str a) b)))
-			  (chain (optional (one-of '+-))
-				 (many1 digit)
-				 (optional (transp (dot digits)
-						   (apply str dot digits)
-						   (chain (one-of '.) (many digit)))))))
+(assign read-piped-symbol (transp xs
+				  (apply str xs)
+				  (many-delimited (string-part "|") "|")))
 
-(def modifer (s)
-  (por (chain (pstr s) (pthunk (fn () expression2)))
-       (pstr s)))
+(assign read-string (transp xs
+			    (list '' (apply str xs))
+			    (many-delimited (string-part "\"") "\"")))
 
-(assign expression (apply por number symbol string (pthunk (fn () plist))
-			  (pthunk (fn () bracket-list)) piped-symbol
-			  (map [modifer _] '(' ` ,@ ,))))
+(def read-modifer (xs i)
+  (with (end (+ i (if (is (get xs (+ i 1)) "@")
+		      2
+		      1))
+	 modifer (xs.substring i end))
+    (if (some (get xs end) (str seps ")]"))
+	(list false modifer end)
+	(let (err res i) (dotted-expression xs end)
+	  (if err
+	      (list err)
+	      (list false (list modifer res) i))))))
 
-(assign expression2 (transp xs (if (is xs.length 1)
-				   (get xs 0)
-				   `(. ,@xs))
-			    (sep-by1 expression (one-of '.))))
+(def expression (xs i)
+  (let c (get xs i)
+    ((case c
+      |"| read-string
+      |\|| read-piped-symbol
+      |(| read-list
+      |[| read-bracket-list
+      (if (adigit c) read-number
+	  (some c '+-) symbol/number
+	  (or (asymbol-char c) (is '. c)) read-symbol
+	  (some c "`',") read-modifer
+	  (fn (xs i)
+	    (make-error xs i '(unexpected char)))))
+     xs i)))
 
-(assign sep (many (one-of "\n\t ")))
+(def sep (xs i) (each-from-while i x xs (some x seps)))
 
-(assign expressions (start-sep-end expression2 sep))
+(def dotted-expression (xs i)
+  (= i (sep xs i))
+  (let (err front i) (expression xs i)
+    (if err
+	(list err)
+	(let tail ()
+	      (while (and (is (get xs i) '.) (no err))
+		(let (newerr res newi) (expression xs (+ i 1))
+		  (if newerr
+		      (= err (list newerr))
+		      (do
+			(tail.push res)
+			(= i newi)))))
+	      (or err (list false
+			    (if tail
+				`(. ,front ,@tail)
+				front)
+			    (sep xs i)))))))
 
-(assign plist (between (one-of "(") (one-of  ")") expressions))
+(assign read-file (fn (xs i) ((many-delimited dotted-expression undefined)
+			      xs (- i 1))))
 
-(assign bracket-list (transp xs `(|[| ,@xs)
-			     (between (one-of "[") (one-of "]") expressions)))
-
-(assign pfile (transp (file _) file (chain expressions eof)))
+(def pfile (xs i)
+  (let (err res i) (read-file xs i)
+    (or err (list res i))))

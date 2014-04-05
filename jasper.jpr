@@ -206,8 +206,8 @@
                             `(list ',k ,v))
                           (pair args)))))
 
-(mac each-while (iv xs cond 'body)
-  (with (i null v null)
+(mac each-from-while (starti iv xs cond 'body)
+  (with (i null v null gxs (gensym xs))
     (if (alist iv)
 	(do
 	  (= i (first iv))
@@ -215,10 +215,16 @@
 	(do
 	  (= i (gensym i))
 	  (= v iv)))
-    `(let ,i 0
-       (while (and (< ,i (, xs).length) ,cond)
-	 ,@(subsname v `(get ,xs ,i) body)
-	 (++ ,i)))))
+    `(with (,i ,starti
+	    ,gxs ,xs)
+       ,(subsname v `(get ,gxs ,i)
+		  `(while (and (< ,i (, gxs).length) ,cond)
+		     ,@body
+		     (++ ,i)))
+       ,i)))
+
+(mac each-while (iv xs cond 'body)
+  `(each-from-while 0 ,iv ,xs ,cond ,@body))
 
 (mac each (iv xs 'body)
   `(each-while ,iv ,xs true ,@body))

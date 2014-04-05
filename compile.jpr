@@ -1,8 +1,8 @@
 (def parse (data f)
-  (let foo (pfile (str data) 0)
-    (if (second foo)
-	 (f (first foo))
-	 (prn (first foo)))))
+  (let (err res) (read-file (str data) 0)
+    (if err
+	(prn err)
+	(f res))))
 
 (def gather-callbacks (cbs f)
   (let res (map (fn () undefined) cbs)
