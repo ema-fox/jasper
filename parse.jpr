@@ -63,13 +63,15 @@
   (++ i)
   (with (res ()
 	 err false)
-    (while (no (or (some (get xs i) (list delimeter undefined)) err))
-      (let (newerr bar newi) (f xs i)
-	(if newerr
-	    (= err (list newerr))
-	    (do
-	      (res.push bar)
-	      (= i newi)))))
+    (while (no (or (is (get xs i) delimeter) err))
+      (if (is (get xs i) undefined)
+	  (= err '((unexpected end of input)))
+	  (let (newerr bar newi) (f xs i)
+	    (if newerr
+		(= err (list newerr))
+		(do
+		  (res.push bar)
+		  (= i newi))))))
     (or err (list false res (+ i 1)))))
 
 (assign seps "\n\t ")
