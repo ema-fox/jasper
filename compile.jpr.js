@@ -636,9 +636,12 @@ var gather_callbacks = ((function  () {
 var run_repl = ((function  () {
     return ((((process.argv)[2]) === ("-i")))
 })());
+var watch = ((function  () {
+    return ((((process.argv)[2]) === ("-w")))
+})());
 var files = ((function  () {
     var g_g510_g511;
-    return ((slice((process.argv), (((g_g510_g511 = run_repl), (((alist(g_g510_g511)) && ((g_g510_g511.length) === 0)) ? false : ((g_g510_g511 === 0) ? true : g_g510_g511))) ? 3 : 2))))
+    return ((slice((process.argv), (((g_g510_g511 = (run_repl || watch)), (((alist(g_g510_g511)) && ((g_g510_g511.length) === 0)) ? false : ((g_g510_g511 === 0) ? true : g_g510_g511))) ? 3 : 2))))
 })());
 var now = ((function  () {
     return ((function now () {
@@ -653,20 +656,22 @@ var repl = ((function  () {
 }))))))
 }))
 })());
-var start = ((function  () {
-    return ((now()))
-})());
 ((function  () {
-    var fs_g517;
-    return (((fs_g517 = (require(("fs")))), (gather_callbacks((map((function  (file) {
+    var g_g517_g518, foo_g519, files_g520, fs_g521;
+    return (((fs_g521 = (require(("fs")))), ((files_g520 = (cat((list((str(__dirname, ("/jasper.jpr"))))), files))), ((foo_g519 = (function  () {
+    var start_g522;
+    return ((((start_g522 = (now())), (gather_callbacks((map((function  (file) {
     return (((function  (f) {
-    return ((((fs_g517.readFile)(file, (function  (err, data) {
-    var g_g513_g518;
-    return (((((g_g513_g518 = err), (((alist(g_g513_g518)) && ((g_g513_g518.length) === 0)) ? false : ((g_g513_g518 === 0) ? true : g_g513_g518))) ? (prn(err)) : (parse(data, f)))))
+    return ((((fs_g521.readFile)(file, (function  (err, data) {
+    var g_g513_g523;
+    return (((((g_g513_g523 = err), (((alist(g_g513_g523)) && ((g_g513_g523.length) === 0)) ? false : ((g_g513_g523 === 0) ? true : g_g513_g523))) ? (prn(err)) : (parse(data, f)))))
 })))))
 })))
-}), (cat((list((str(__dirname, ("/jasper.jpr"))))), files)))), (function  (codes) {
-    var g_g515_g519, g_g514_g520, output_g521, code_g522, g_g516_g523;
-    return (((prn(((now()) - start))), ((code_g522 = (apply(cat, codes))), ((output_g521 = (compile(code_g522))), ((((g_g514_g520 = (((g_g515_g519 = run_repl), (((alist(g_g515_g519)) && ((g_g515_g519.length) === 0)) ? false : ((g_g515_g519 === 0) ? true : g_g515_g519))) ? false : true)), (((alist(g_g514_g520)) && ((g_g514_g520.length) === 0)) ? false : ((g_g514_g520 === 0) ? true : g_g514_g520))) ? ((fs_g517.writeFileSync)((str((files[((files.length) - 1)]), (".js"))), output_g521)) : null)))), (prn(((now()) - start))), (((g_g516_g523 = run_repl), (((alist(g_g516_g523)) && ((g_g516_g523.length) === 0)) ? false : ((g_g516_g523 === 0) ? true : g_g516_g523))) ? (repl()) : null)))
-})))))
+}), files_g520)), (function  (codes) {
+    var g_g515_g524, g_g514_g525, output_g526, code_g527, g_g516_g528;
+    return (((prn(((now()) - start_g522))), ((code_g527 = (apply(cat, codes))), ((output_g526 = (compile(code_g527))), ((((g_g514_g525 = (((g_g515_g524 = run_repl), (((alist(g_g515_g524)) && ((g_g515_g524.length) === 0)) ? false : ((g_g515_g524 === 0) ? true : g_g515_g524))) ? false : true)), (((alist(g_g514_g525)) && ((g_g514_g525.length) === 0)) ? false : ((g_g514_g525 === 0) ? true : g_g514_g525))) ? ((fs_g521.writeFileSync)((str((files_g520[((files_g520.length) - 1)]), (".js"))), output_g526)) : null)))), (prn(((now()) - start_g522))), (((g_g516_g528 = run_repl), (((alist(g_g516_g528)) && ((g_g516_g528.length) === 0)) ? false : ((g_g516_g528 === 0) ? true : g_g516_g528))) ? (repl()) : null)))
+}))))))
+})), ((foo_g519()), (((g_g517_g518 = watch), (((alist(g_g517_g518)) && ((g_g517_g518.length) === 0)) ? false : ((g_g517_g518 === 0) ? true : g_g517_g518))) ? (map((function  (path) {
+    return ((((fs_g521.watch)(path, foo_g519))))
+}), files_g520)) : null))))))
 })());
