@@ -63,7 +63,7 @@
   (++ i)
   (with (res ()
 	 err false)
-    (while (no (or (is (get xs i) delimeter) err))
+    (while (no (or (some (get xs i) (list delimeter undefined)) err))
       (let (newerr bar newi) (f xs i)
 	(if newerr
 	    (= err (list newerr))
