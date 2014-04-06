@@ -126,24 +126,26 @@
 
 (def sep (xs i) (each-from-while i x xs (some x seps)))
 
+(def second-expression (xs i front)
+  (let (err back end) (expression xs (+ i 1))
+    (if err
+	(list err)
+	(let bla (list (case (get xs i)
+			 . '.
+			 |:| 'get)
+		       front back)
+	  (if (some (get xs end) ".:")
+	      (second-expression xs end bla)
+	      (list false bla (sep xs end)))))))
+
 (def dotted-expression (xs i)
   (= i (sep xs i))
   (let (err front i) (expression xs i)
     (if err
 	(list err)
-	(let tail ()
-	      (while (and (is (get xs i) '.) (no err))
-		(let (newerr res newi) (expression xs (+ i 1))
-		  (if newerr
-		      (= err (list newerr))
-		      (do
-			(tail.push res)
-			(= i newi)))))
-	      (or err (list false
-			    (if tail
-				`(. ,front ,@tail)
-				front)
-			    (sep xs i)))))))
+	(some (get xs i) ".:")
+	(second-expression xs i front)
+	(list false front (sep xs i)))))
 
 (assign read-file (fn (xs i) ((many-delimited dotted-expression undefined)
 			      xs (- i 1))))
