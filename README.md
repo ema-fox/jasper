@@ -1,5 +1,7 @@
 Jasper is an experimental language that brings javascript halfway to arc. It's still pretty much in flux.
 
+Try jasper in your browser at http://ema-fox.github.io/jasper
+
 It differs from arc by
 - representing lists by arrays and not cons cells.
 - having no TCO.
@@ -24,4 +26,4 @@ Run the repl:
     (2 3 4)
     ¿ 
 
- 
+Use the -w option if you want the compiler to automatically recompile when its input files change. (Like coffeeScript does it)
