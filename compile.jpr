@@ -14,7 +14,9 @@
 
 (assign run-repl (is (get process.argv 2) '-i))
 
-(assign files (slice process.argv (if run-repl 3 2)))
+(assign watch (is (get process.argv 2) '-w))
+
+(assign files (slice process.argv (if (or run-repl watch) 3 2)))
 
 (def now ()
   (/ ((new Date).getTime) 1000))
@@ -29,22 +31,28 @@
       (prn (cmd-handler line))
       (rl.prompt))))
 
-(assign start (now))
-
-(let fs (require 'fs)
-  (callback (gather-callbacks (map (fn (file)
-				     (fn (f)
-				       (callback (fs.readFile file) (err data)
-					 (if err
-					     (prn err)
-					     (parse data f)))))
-				   `(,(str __dirname "/jasper.jpr") ,@files)))
-	    (codes)
-    (prn (- (now) start))
-    (with (code (apply cat codes)
-		output (compile code))
-      (if (no run-repl)
-	  (fs.writeFileSync (str (get files (- files.length 1)) ".js") output)))
-    (prn (- (now) start))
-    (if run-repl
-	(repl))))
+(with (fs (require 'fs)
+       files `(,(str __dirname "/jasper.jpr") ,@files)
+       foo (fn ()
+	     (let start (now)
+	     (callback (gather-callbacks (map (fn (file)
+						(fn (f)
+						  (callback (fs.readFile file) (err data)
+						    (if err
+							(prn err)
+							(parse data f)))))
+					      files))
+		       (codes)
+	       (prn (- (now) start))
+	       (with (code (apply cat codes)
+		      output (compile code))
+		 (if (no run-repl)
+		     (fs.writeFileSync (str (get files (- files.length 1)) ".js") output)))
+	       (prn (- (now) start))
+	       (if run-repl
+		   (repl))))))
+  (foo)
+  (if watch
+      (map (fn (path)
+	     (fs.watch path foo))
+	   files)))
