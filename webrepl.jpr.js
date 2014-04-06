@@ -1,7 +1,7 @@
 "use strict";
 var slice = ((function  () {
     return ((function slice (xs, start, end) {
-    return (((([].slice.call)(xs, start, end))))
+    return ((((([].slice).call)(xs, start, end))))
 }))
 })());
 var list = ((function  () {
@@ -19,12 +19,12 @@ var idfn = ((function  () {
 })());
 var cat = ((function  () {
     return ((function cat () {
-    return (((([].concat.apply)([], arguments))))
+    return ((((([].concat).apply)([], arguments))))
 }))
 })());
 var join = ((function  () {
     return ((function join (xs, x) {
-    return (((([].join.call)(xs, x))))
+    return ((((([].join).call)(xs, x))))
 }))
 })());
 var str = ((function  () {
@@ -68,7 +68,7 @@ var apply_method = ((function  () {
 "((function  () {\n    return ((function $br () {\n    var body_g21, g_g20_g22;\n    return (((g_g20_g22 = arguments), ((body_g21 = (slice(g_g20_g22, 0, ((g_g20_g22.length) - 0)))), (list((\"fun\"), (\"\"), (list((\"_\"))), body_g21)))))\n}))\n})())";
 var map1 = ((function  () {
     return ((function map1 (f, xs) {
-    return (((([].map.call)(xs, (function  (_) {
+    return ((((([].map).call)(xs, (function  (_) {
     return (((f(_))))
 })))))
 }))
@@ -184,12 +184,13 @@ var list2obj = ((function  () {
 }))
 })());
 "((function  () {\n    return ((function obj () {\n    var args_g140, g_g137_g141;\n    return (((g_g137_g141 = arguments), ((args_g140 = (slice(g_g137_g141, 0, ((g_g137_g141.length) - 0)))), (list(\"list2obj\", (cat((list(\"list\")), (map((function  (sub_g138) {\n    var k_g142, v_g143, g_g139_g144;\n    return ((((g_g139_g144 = sub_g138), ((v_g143 = (g_g139_g144[1])), ((k_g142 = (g_g139_g144[0])), (list(\"list\", (list(\"'\", k_g142)), v_g143)))))))\n}), (pair(args_g140)))))))))))\n}))\n})())";
-"((function  () {\n    return ((function each_while (iv, xs, cond) {\n    var g_g146_g147, v_g148, i_g149, body_g150, g_g145_g151;\n    return (((g_g145_g151 = arguments), ((body_g150 = (slice(g_g145_g151, 3, ((g_g145_g151.length) - 0)))), ((i_g149 = null), ((v_g148 = null), ((((g_g146_g147 = (alist(iv))), (((alist(g_g146_g147)) && ((g_g146_g147.length) === 0)) ? false : ((g_g146_g147 === 0) ? true : g_g146_g147))) ? ((i_g149 = (first(iv))), (v_g148 = (second(iv)))) : ((i_g149 = (gensym(i_g149))), (v_g148 = iv))), (list(\"let\", i_g149, 0, (cat((list(\"while\")), (list((list(\"and\", (list(\"<\", i_g149, (list(\".\", xs, \"length\")))), cond)))), (subsname(v_g148, (list(\"get\", xs, i_g149)), body_g150)), (list((list(\"++\", i_g149))))))))))))))\n}))\n})())";
-"((function  () {\n    return ((function each (iv, xs) {\n    var body_g153, g_g152_g154;\n    return (((g_g152_g154 = arguments), ((body_g153 = (slice(g_g152_g154, 2, ((g_g152_g154.length) - 0)))), (cat((list(\"each-while\")), (list(iv)), (list(xs)), (list(\"true\")), body_g153)))))\n}))\n})())";
+"((function  () {\n    return ((function each_from_while (starti, iv, xs, cond) {\n    var g_g146_g147, gxs_g148, v_g149, i_g150, body_g151, g_g145_g152;\n    return (((g_g145_g152 = arguments), ((body_g151 = (slice(g_g145_g152, 4, ((g_g145_g152.length) - 0)))), ((i_g150 = null), ((v_g149 = null), ((gxs_g148 = (gensym(xs))), ((((g_g146_g147 = (alist(iv))), (((alist(g_g146_g147)) && ((g_g146_g147.length) === 0)) ? false : ((g_g146_g147 === 0) ? true : g_g146_g147))) ? ((i_g150 = (first(iv))), (v_g149 = (second(iv)))) : ((i_g150 = (gensym(i_g150))), (v_g149 = iv))), (list(\"with\", (list(i_g150, starti, gxs_g148, xs)), (subsname(v_g149, (list(\"get\", gxs_g148, i_g150)), (cat((list(\"while\")), (list((list(\"and\", (list(\"<\", i_g150, (list(\".\", gxs_g148, \"length\")))), cond)))), body_g151, (list((list(\"++\", i_g150)))))))), i_g150)))))))))\n}))\n})())";
+"((function  () {\n    return ((function each_while (iv, xs, cond) {\n    var body_g154, g_g153_g155;\n    return (((g_g153_g155 = arguments), ((body_g154 = (slice(g_g153_g155, 3, ((g_g153_g155.length) - 0)))), (cat((list(\"each-from-while\")), (list(0)), (list(iv)), (list(xs)), (list(cond)), body_g154)))))\n}))\n})())";
+"((function  () {\n    return ((function each (iv, xs) {\n    var body_g157, g_g156_g158;\n    return (((g_g156_g158 = arguments), ((body_g157 = (slice(g_g156_g158, 2, ((g_g156_g158.length) - 0)))), (cat((list(\"each-while\")), (list(iv)), (list(xs)), (list(\"true\")), body_g157)))))\n}))\n})())";
 var testify = ((function  () {
     return ((function testify (test) {
-    var g_g155_g156;
-    return (((((g_g155_g156 = (afunction(test))), (((alist(g_g155_g156)) && ((g_g155_g156.length) === 0)) ? false : ((g_g155_g156 === 0) ? true : g_g155_g156))) ? test : (function  (_) {
+    var g_g159_g160;
+    return (((((g_g159_g160 = (afunction(test))), (((alist(g_g159_g160)) && ((g_g159_g160.length) === 0)) ? false : ((g_g159_g160 === 0) ? true : g_g159_g160))) ? test : (function  (_) {
     return (((test === _)))
 }))))
 }))
@@ -197,37 +198,37 @@ var testify = ((function  () {
 "((function  () {\n    return ((function no (x) {\n    return (((list(\"if\", x, \"false\", \"true\"))))\n}))\n})())";
 var index_by = ((function  () {
     return ((function index_by (test, xs) {
-    var g_g157_g159, g_g158_g160, i_g161, index_g162, f_g163;
-    return ((((f_g163 = (testify(test))), ((index_g162 = false), (((i_g161 = 0), (function () {while (((i_g161 < (xs.length)) && (((g_g157_g159 = index_g162), (((alist(g_g157_g159)) && ((g_g157_g159.length) === 0)) ? false : ((g_g157_g159 === 0) ? true : g_g157_g159))) ? false : true))) {
-    (((g_g158_g160 = (f_g163((xs[i_g161])))), (((alist(g_g158_g160)) && ((g_g158_g160.length) === 0)) ? false : ((g_g158_g160 === 0) ? true : g_g158_g160))) ? (index_g162 = i_g161) : null), (++i_g161);
-}}())), index_g162)))))
+    var g_g162_g164, g_g163_g165, xs_g161_g166, i_g167, index_g168, f_g169;
+    return ((((f_g169 = (testify(test))), ((index_g168 = false), (((i_g167 = 0), ((xs_g161_g166 = xs), ((function () {while (((i_g167 < (xs_g161_g166.length)) && (((g_g162_g164 = index_g168), (((alist(g_g162_g164)) && ((g_g162_g164.length) === 0)) ? false : ((g_g162_g164 === 0) ? true : g_g162_g164))) ? false : true))) {
+    (((g_g163_g165 = (f_g169((xs_g161_g166[i_g167])))), (((alist(g_g163_g165)) && ((g_g163_g165.length) === 0)) ? false : ((g_g163_g165 === 0) ? true : g_g163_g165))) ? (index_g168 = i_g167) : null), (++i_g167);
+}}()), i_g167))), index_g168)))))
 }))
 })());
 var find = ((function  () {
     return ((function find (test, xs) {
-    var g_g164_g165, it_g166;
-    return ((((it_g166 = (index_by(test, xs))), (((g_g164_g165 = it_g166), (((alist(g_g164_g165)) && ((g_g164_g165.length) === 0)) ? false : ((g_g164_g165 === 0) ? true : g_g164_g165))) ? (xs[it_g166]) : undefined))))
+    var g_g170_g171, it_g172;
+    return ((((it_g172 = (index_by(test, xs))), (((g_g170_g171 = it_g172), (((alist(g_g170_g171)) && ((g_g170_g171.length) === 0)) ? false : ((g_g170_g171 === 0) ? true : g_g170_g171))) ? (xs[it_g172]) : undefined))))
 }))
 })());
 var split_by = ((function  () {
     return ((function split_by (f, xs) {
-    var g_g167_g168, i_g169;
-    return ((((i_g169 = (index_by(f, xs))), (((g_g167_g168 = (i_g169 === false)), (((alist(g_g167_g168)) && ((g_g167_g168.length) === 0)) ? false : ((g_g167_g168 === 0) ? true : g_g167_g168))) ? (list(xs, [])) : (list((slice(xs, 0, i_g169)), (slice(xs, i_g169))))))))
+    var g_g173_g174, i_g175;
+    return ((((i_g175 = (index_by(f, xs))), (((g_g173_g174 = (i_g175 === false)), (((alist(g_g173_g174)) && ((g_g173_g174.length) === 0)) ? false : ((g_g173_g174 === 0) ? true : g_g173_g174))) ? (list(xs, [])) : (list((slice(xs, 0, i_g175)), (slice(xs, i_g175))))))))
 }))
 })());
 var some = ((function  () {
     return ((function some (test, xs) {
-    var g_g171_g173, g_g172_g174, it_g175, _g170_g176, res_g177, f_g178;
-    return ((((f_g178 = (testify(test))), ((res_g177 = false), (((_g170_g176 = 0), (function () {while (((_g170_g176 < (xs.length)) && (((g_g171_g173 = res_g177), (((alist(g_g171_g173)) && ((g_g171_g173.length) === 0)) ? false : ((g_g171_g173 === 0) ? true : g_g171_g173))) ? false : true))) {
-    ((it_g175 = (f_g178((xs[_g170_g176])))), (((g_g172_g174 = it_g175), (((alist(g_g172_g174)) && ((g_g172_g174.length) === 0)) ? false : ((g_g172_g174 === 0) ? true : g_g172_g174))) ? (res_g177 = it_g175) : undefined)), (++_g170_g176);
-}}())), res_g177)))))
+    var g_g178_g180, g_g179_g181, it_g182, xs_g176_g183, _g177_g184, res_g185, f_g186;
+    return ((((f_g186 = (testify(test))), ((res_g185 = false), (((_g177_g184 = 0), ((xs_g176_g183 = xs), ((function () {while (((_g177_g184 < (xs_g176_g183.length)) && (((g_g178_g180 = res_g185), (((alist(g_g178_g180)) && ((g_g178_g180.length) === 0)) ? false : ((g_g178_g180 === 0) ? true : g_g178_g180))) ? false : true))) {
+    ((it_g182 = (f_g186((xs_g176_g183[_g177_g184])))), (((g_g179_g181 = it_g182), (((alist(g_g179_g181)) && ((g_g179_g181.length) === 0)) ? false : ((g_g179_g181 === 0) ? true : g_g179_g181))) ? (res_g185 = it_g182) : undefined)), (++_g177_g184);
+}}()), _g177_g184))), res_g185)))))
 }))
 })());
 var all = ((function  () {
     return ((function all (test, xs) {
-    var f_g179;
-    return ((((f_g179 = (testify(test))), (!((some((function  (_) {
-    return (((!((f_g179(_))))))
+    var f_g187;
+    return ((((f_g187 = (testify(test))), (!((some((function  (_) {
+    return (((!((f_g187(_))))))
 }), xs)))))))
 }))
 })());
@@ -236,161 +237,85 @@ var iso = ((function  () {
     return ((((x === y) || ((alist(x)) && (alist(y)) && ((x.length) === (y.length)) && (all(true, (map(iso, x, y))))))))
 }))
 })());
-"((function  () {\n    return ((function callback (to, from) {\n    var body_g181, g_g180_g182;\n    return (((g_g180_g182 = arguments), ((body_g181 = (slice(g_g180_g182, 2, ((g_g180_g182.length) - 0)))), (cat(to, (list((cat((list(\"fn\")), (list(from)), body_g181)))))))))\n}))\n})())";
-"((function  () {\n    return ((function defp (name, args) {\n    var body_g184, g_g183_g185;\n    return (((g_g183_g185 = arguments), ((body_g184 = (slice(g_g183_g185, 2, ((g_g183_g185.length) - 0)))), (list(\"def\", name, args, (cat((list(\"fn\")), (list((list(\"xs\", \"i\")))), body_g184)))))))\n}))\n})())";
-"((function  () {\n    return ((function defletp (name, args, varname, val) {\n    var body_g187, g_g186_g188;\n    return (((g_g186_g188 = arguments), ((body_g187 = (slice(g_g186_g188, 4, ((g_g186_g188.length) - 0)))), (list(\"def\", name, args, (list(\"let\", varname, val, (cat((list(\"fn\")), (list((list(\"xs\", \"i\")))), body_g187)))))))))\n}))\n})())";
-var eof = ((function  () {
-    return ((function  (xs, i) {
-    var g_g189_g190;
-    return (((((g_g189_g190 = ((xs.length) === i)), (((alist(g_g189_g190)) && ((g_g189_g190.length) === 0)) ? false : ((g_g189_g190 === 0) ? true : g_g189_g190))) ? (list(true, i)) : ([["no-eof"]]))))
-}))
-})());
-var one_of = ((function  () {
-    return ((function one_of (ys) {
-    var err_g192;
-    return ((((err_g192 = (list((list("one-of", ys))))), (function  (xs, i) {
-    var g_g191_g193, x_g194;
-    return ((((x_g194 = (xs[i])), (((g_g191_g193 = (some(x_g194, ys))), (((alist(g_g191_g193)) && ((g_g191_g193.length) === 0)) ? false : ((g_g191_g193 === 0) ? true : g_g191_g193))) ? (list(x_g194, (i + 1))) : err_g192))))
-}))))
-}))
-})());
-var none_of = ((function  () {
-    return ((function none_of (ys) {
-    var err_g196;
-    return ((((err_g196 = (list((list("none-of", ys))))), (function  (xs, i) {
-    var g_g195_g197, x_g198;
-    return ((((x_g198 = (xs[i])), (((g_g195_g197 = (!((some(x_g198, ys))))), (((alist(g_g195_g197)) && ((g_g195_g197.length) === 0)) ? false : ((g_g195_g197 === 0) ? true : g_g195_g197))) ? (list(x_g198, (i + 1))) : err_g196))))
-}))))
-}))
-})());
-var por = ((function  () {
-    return ((function por () {
-    var fs_g206, g_g199_g207;
-    return (((g_g199_g207 = arguments), ((fs_g206 = (slice(g_g199_g207, 0, ((g_g199_g207.length) - 0)))), (function  (xs, i) {
-    var g_g200_g208, g_g201_g209, foo_g210, g_g203_g211, g_g205_g212, g_g204_g213, g_g202_g214, res_g215, j_g216, errs_g217;
-    return ((((errs_g217 = []), ((j_g216 = 0), ((res_g215 = false), ((function () {while (((j_g216 < (fs_g206.length)) && (((g_g200_g208 = res_g215), (((alist(g_g200_g208)) && ((g_g200_g208.length) === 0)) ? false : ((g_g200_g208 === 0) ? true : g_g200_g208))) ? false : true))) {
-    ((foo_g210 = ((fs_g206[j_g216])(xs, i))), (((g_g201_g209 = (foo_g210[1])), (((alist(g_g201_g209)) && ((g_g201_g209.length) === 0)) ? false : ((g_g201_g209 === 0) ? true : g_g201_g209))) ? (res_g215 = foo_g210) : (((errs_g217.push)((foo_g210[0]))), (++j_g216))));
-}}()), ((g_g202_g214 = res_g215), (((g_g203_g211 = g_g202_g214), (((alist(g_g203_g211)) && ((g_g203_g211.length) === 0)) ? false : ((g_g203_g211 === 0) ? true : g_g203_g211))) ? g_g202_g214 : ((g_g204_g213 = (list((cat((list("or")), errs_g217))))), (((g_g205_g212 = g_g204_g213), (((alist(g_g205_g212)) && ((g_g205_g212.length) === 0)) ? false : ((g_g205_g212 === 0) ? true : g_g205_g212))) ? g_g204_g213 : null))))))))))
-}))))
-}))
-})());
-var chain = ((function  () {
-    return ((function chain () {
-    var fs_g221, g_g218_g222;
-    return (((g_g218_g222 = arguments), ((fs_g221 = (slice(g_g218_g222, 0, ((g_g218_g222.length) - 0)))), (function  (xs, i) {
-    var res_g223;
-    return ((((res_g223 = []), ((function self (fs_g221) {
-    var g_g219_g224, g_g220_g225, foo_g226;
-    return (((((g_g219_g224 = fs_g221), (((alist(g_g219_g224)) && ((g_g219_g224.length) === 0)) ? false : ((g_g219_g224 === 0) ? true : g_g219_g224))) ? ((foo_g226 = ((fs_g221[0])(xs, i))), (((g_g220_g225 = ((foo_g226.length) === 2)), (((alist(g_g220_g225)) && ((g_g220_g225.length) === 0)) ? false : ((g_g220_g225 === 0) ? true : g_g220_g225))) ? (((res_g223.push)((foo_g226[0]))), (i = (foo_g226[1])), (self((slice(fs_g221, 1))))) : (list((cat((list("at")), (list(i)), foo_g226)))))) : (list(res_g223, i)))))
-})(fs_g221)))))
-}))))
-}))
-})());
-var pstr = ((function  () {
-    return ((function pstr (s) {
-    var err_g228;
-    return ((((err_g228 = (list((list(s))))), (function  (xs, i) {
-    var g_g227_g229;
-    return (((((g_g227_g229 = (((xs.substr)(i, (s.length))) === s)), (((alist(g_g227_g229)) && ((g_g227_g229.length) === 0)) ? false : ((g_g227_g229 === 0) ? true : g_g227_g229))) ? (list(s, (i + (s.length)))) : err_g228)))
-}))))
-}))
-})());
-var many = ((function  () {
-    return ((function many (f) {
-    return (((function  (xs, i) {
-    var foo_g230, res_g231;
-    return ((((res_g231 = []), ((foo_g230 = undefined), ((function () {while (((foo_g230 = (f(xs, i))), ((foo_g230.length) === 2))) {
-    ((res_g231.push)((foo_g230[0]))), (i = (foo_g230[1]));
-}}()), (list(res_g231, i)))))))
-})))
-}))
-})());
+"((function  () {\n    return ((function callback (to, from) {\n    var body_g189, g_g188_g190;\n    return (((g_g188_g190 = arguments), ((body_g189 = (slice(g_g188_g190, 2, ((g_g188_g190.length) - 0)))), (cat(to, (list((cat((list(\"fn\")), (list(from)), body_g189)))))))))\n}))\n})())";
+"((function  () {\n    return ((function defp (name, args) {\n    var body_g192, g_g191_g193;\n    return (((g_g191_g193 = arguments), ((body_g192 = (slice(g_g191_g193, 2, ((g_g191_g193.length) - 0)))), (list(\"def\", name, args, (cat((list(\"fn\")), (list((list(\"xs\", \"i\")))), body_g192)))))))\n}))\n})())";
 var transform = ((function  () {
     return ((function transform (f, p) {
     return (((function  (xs, i) {
-    var g_g232_g233, foo_g234;
-    return ((((foo_g234 = (p(xs, i))), (((g_g232_g233 = ((foo_g234.length) === 2)), (((alist(g_g232_g233)) && ((g_g232_g233.length) === 0)) ? false : ((g_g232_g233 === 0) ? true : g_g232_g233))) ? (list((f((foo_g234[0]))), (foo_g234[1]))) : foo_g234))))
+    var g_g195_g196, err_g197, res_g198, i_g199, g_g194_g200;
+    return ((((g_g194_g200 = (p(xs, i))), ((i_g199 = (g_g194_g200[2])), ((res_g198 = (g_g194_g200[1])), ((err_g197 = (g_g194_g200[0])), (((g_g195_g196 = err_g197), (((alist(g_g195_g196)) && ((g_g195_g196.length) === 0)) ? false : ((g_g195_g196 === 0) ? true : g_g195_g196))) ? (list(err_g197)) : (list(false, (f(res_g198)), i_g199)))))))))
 })))
 }))
 })());
 "((function  () {\n    return ((function transp (arg, body, p) {\n    return (((list(\"transform\", (list(\"fn\", (list(arg)), body)), p))))\n}))\n})())";
-var many1 = ((function  () {
-    return ((function many1 (f) {
-    return (((transform((function  (sub_g235) {
-    var x_g237, xs_g238, g_g236_g239;
-    return ((((g_g236_g239 = sub_g235), ((xs_g238 = (g_g236_g239[1])), ((x_g237 = (g_g236_g239[0])), (cat((list(x_g237)), xs_g238)))))))
-}), (chain(f, (many(f))))))))
-}))
-})());
-var pnothing = ((function  () {
-    return ((function  (xs, i) {
-    return (((list(null, i))))
-}))
-})());
-var optional = ((function  () {
-    return ((function optional (f) {
-    return (((por(f, pnothing))))
-}))
-})());
-var sep_by1 = ((function  () {
-    return ((function sep_by1 (fa, fb) {
-    return (((transform((function  (sub_g240) {
-    var x_g242, xs_g243, g_g241_g244;
-    return ((((g_g241_g244 = sub_g240), ((xs_g243 = (g_g241_g244[1])), ((x_g242 = (g_g241_g244[0])), (cat((list(x_g242)), (map(second, xs_g243)))))))))
-}), (chain(fa, (many((chain(fb, fa))))))))))
-}))
-})());
-var sep_by = ((function  () {
-    return ((function sep_by (fa, fb) {
-    return (((por((sep_by1(fa, fb)), (transform((function  (sub_g245) {
-    return ((([])))
-}), pnothing))))))
-}))
-})());
-var prange = ((function  () {
-    return ((function prange (a, b) {
-    var err_g249;
-    return ((((err_g249 = (list((list("range", a, b))))), (function  (xs, i) {
-    var g2_g248_g250, g1_g247_g251, g_g246_g252, x_g253;
-    return ((((x_g253 = (xs[i])), (((g_g246_g252 = ((g1_g247_g251 = a), ((g2_g248_g250 = x_g253), (((g1_g247_g251 <= g2_g248_g250) && (g2_g248_g250 <= b)))))), (((alist(g_g246_g252)) && ((g_g246_g252.length) === 0)) ? false : ((g_g246_g252 === 0) ? true : g_g246_g252))) ? (list(x_g253, (i + 1))) : err_g249))))
-}))))
-}))
-})());
 var dbgp = ((function  () {
     return ((function dbgp (f) {
     return (((function  (xs, i) {
-    var foo_g254;
-    return ((((foo_g254 = (f(xs, i))), (prn(xs, i, foo_g254)), foo_g254)))
+    var foo_g201;
+    return ((((foo_g201 = (f(xs, i))), (prn(i, foo_g201)), foo_g201)))
 })))
 }))
 })());
-var alpha = ((function  () {
-    return ((por((prange(("a"), ("z"))), (prange(("A"), ("Z"))))))
-})());
-var digit = ((function  () {
-    return ((prange(("0"), ("9"))))
-})());
-var symbol_char = ((function  () {
-    return ((por(alpha, (one_of(("!/%-$<>_+*="))))))
-})());
-var symbol = ((function  () {
-    return ((por((transform((function  (sub_g255) {
-    var x_g257, xs_g258, g_g256_g259;
-    return ((((g_g256_g259 = sub_g255), ((xs_g258 = (g_g256_g259[1])), ((x_g257 = (g_g256_g259[0])), (apply(str, x_g257, xs_g258)))))))
-}), (chain(symbol_char, (many((por(symbol_char, digit)))))))), (one_of(("."))))))
-})());
-var between = ((function  () {
-    return ((function between (a, b, c) {
-    return (((transform((function  (sub_g260) {
-    var __g262, x_g263, __g264, g_g261_g265;
-    return ((((g_g261_g265 = sub_g260), ((__g264 = (g_g261_g265[2])), ((x_g263 = (g_g261_g265[1])), ((__g262 = (g_g261_g265[0])), x_g263))))))
-}), (chain(a, c, b))))))
+var adigit = ((function  () {
+    return ((function adigit (x) {
+    var g2_g203_g204, g1_g202_g205;
+    return ((((g1_g202_g205 = ("0")), ((g2_g203_g204 = x), (((g1_g202_g205 <= g2_g203_g204) && (g2_g203_g204 <= ("9"))))))))
 }))
 })());
-var start_sep_end = ((function  () {
-    return ((function start_sep_end (fa, fb) {
-    return (((between(fb, fb, (sep_by(fa, fb))))))
+var asymbol_char = ((function  () {
+    return ((function asymbol_char (x) {
+    var g2_g207_g210, g1_g206_g211, g2_g209_g212, g1_g208_g213;
+    return (((((g1_g206_g211 = ("a")), ((g2_g207_g210 = x), (((g1_g206_g211 <= g2_g207_g210) && (g2_g207_g210 <= ("z")))))) || ((g1_g208_g213 = ("A")), ((g2_g209_g212 = x), (((g1_g208_g213 <= g2_g209_g212) && (g2_g209_g212 <= ("Z")))))) || (adigit(x)) || (some(x, ("!/%-$<>_+*="))))))
 }))
+})());
+var read_number = ((function  () {
+    return ((function read_number (xs, i) {
+    var g_g214_g220, xs_g215_g221, _g216_g222, g_g217_g223, xs_g218_g224, _g219_g225, end_g226;
+    return ((((end_g226 = i), (((g_g214_g220 = (some((xs[end_g226]), ("+-")))), (((alist(g_g214_g220)) && ((g_g214_g220.length) === 0)) ? false : ((g_g214_g220 === 0) ? true : g_g214_g220))) ? (++end_g226) : null), (end_g226 = ((_g216_g222 = end_g226), ((xs_g215_g221 = xs), ((function () {while (((_g216_g222 < (xs_g215_g221.length)) && (adigit((xs_g215_g221[_g216_g222]))))) {
+    (++_g216_g222);
+}}()), _g216_g222)))), (((g_g217_g223 = ((xs[end_g226]) === ("."))), (((alist(g_g217_g223)) && ((g_g217_g223.length) === 0)) ? false : ((g_g217_g223 === 0) ? true : g_g217_g223))) ? ((++end_g226), (end_g226 = ((_g219_g225 = end_g226), ((xs_g218_g224 = xs), ((function () {while (((_g219_g225 < (xs_g218_g224.length)) && (adigit((xs_g218_g224[_g219_g225]))))) {
+    (++_g219_g225);
+}}()), _g219_g225))))) : null), (list(false, (+((xs.substring)(i, end_g226))), end_g226)))))
+}))
+})());
+var read_symbol = ((function  () {
+    return ((function read_symbol (xs, i) {
+    var xs_g227_g229, _g228_g230, end_g231;
+    return ((((end_g231 = (i + 1)), (end_g231 = ((_g228_g230 = end_g231), ((xs_g227_g229 = xs), ((function () {while (((_g228_g230 < (xs_g227_g229.length)) && (asymbol_char((xs_g227_g229[_g228_g230]))))) {
+    (++_g228_g230);
+}}()), _g228_g230)))), (list(false, ((xs.substring)(i, end_g231)), end_g231)))))
+}))
+})());
+var symbol$snumber = ((function  () {
+    return ((function symbol$snumber (xs, i) {
+    var g_g232_g233;
+    return ((((((g_g232_g233 = (adigit((xs[(i + 1)])))), (((alist(g_g232_g233)) && ((g_g232_g233.length) === 0)) ? false : ((g_g232_g233 === 0) ? true : g_g232_g233))) ? read_number : read_symbol)(xs, i))))
+}))
+})());
+var make_error = ((function  () {
+    return ((function make_error (xs, i, msg) {
+    var foo_g234;
+    return ((((foo_g234 = ((((xs.substring)(0, i)).split)(("\n")))), (list((cat(msg, (list((xs[i]))), (list("at")), (list("line")), (list((foo_g234.length))), (list("collumn")), (list(((foo_g234[((foo_g234.length) - 1)]).length))))))))))
+}))
+})());
+var read_escaped = ((function  () {
+    return ((function read_escaped (xs, i) {
+    var g_g236_g240, g_g237_g241, g_g238_g242, g_g235_g243, g_g239_g244, it_g245, end_g246;
+    return ((((end_g246 = (i + 1)), ((it_g245 = ((g_g235_g243 = (xs[end_g246])), (((g_g236_g240 = (g_g235_g243 === ("n"))), (((alist(g_g236_g240)) && ((g_g236_g240.length) === 0)) ? false : ((g_g236_g240 === 0) ? true : g_g236_g240))) ? ("\n") : (((g_g237_g241 = (g_g235_g243 === ("t"))), (((alist(g_g237_g241)) && ((g_g237_g241.length) === 0)) ? false : ((g_g237_g241 === 0) ? true : g_g237_g241))) ? ("\t") : (((g_g238_g242 = (some((xs[end_g246]), ("\\\"|")))), (((alist(g_g238_g242)) && ((g_g238_g242.length) === 0)) ? false : ((g_g238_g242 === 0) ? true : g_g238_g242))) ? (xs[end_g246]) : null))))), (((g_g239_g244 = it_g245), (((alist(g_g239_g244)) && ((g_g239_g244.length) === 0)) ? false : ((g_g239_g244 === 0) ? true : g_g239_g244))) ? (list(false, it_g245, (end_g246 + 1))) : (make_error(xs, end_g246, (["no","escape","char"]))))))))
+}))
+})());
+var many_delimited = ((function  () {
+    return ((function many_delimited (f, delimeter) {
+    return (((function  (xs, i) {
+    var g_g247_g251, g_g248_g252, g_g250_g253, newerr_g254, bar_g255, newi_g256, g_g249_g257, err_g258, res_g259;
+    return (((++i), ((res_g259 = []), ((err_g258 = false), ((function () {while ((((g_g247_g251 = (((xs[i]) === delimeter) || err_g258)), (((alist(g_g247_g251)) && ((g_g247_g251.length) === 0)) ? false : ((g_g247_g251 === 0) ? true : g_g247_g251))) ? false : true)) {
+    (((g_g248_g252 = ((xs[i]) === undefined)), (((alist(g_g248_g252)) && ((g_g248_g252.length) === 0)) ? false : ((g_g248_g252 === 0) ? true : g_g248_g252))) ? (err_g258 = ([["unexpected","end","of","input"]])) : ((g_g249_g257 = (f(xs, i))), ((newi_g256 = (g_g249_g257[2])), ((bar_g255 = (g_g249_g257[1])), ((newerr_g254 = (g_g249_g257[0])), (((g_g250_g253 = newerr_g254), (((alist(g_g250_g253)) && ((g_g250_g253.length) === 0)) ? false : ((g_g250_g253 === 0) ? true : g_g250_g253))) ? (err_g258 = (list(newerr_g254))) : (((res_g259.push)(bar_g255)), (i = newi_g256))))))));
+}}()), (err_g258 || (list(false, res_g259, (i + 1)))))))))
+})))
+}))
+})());
+var seps = ((function  () {
+    return (("\n\t "))
 })());
 var pthunk = ((function  () {
     return ((function pthunk (f) {
@@ -399,84 +324,90 @@ var pthunk = ((function  () {
 })))
 }))
 })());
-var escaped = ((function  () {
-    return ((transform((function  (sub_g266) {
-    var __g268, x_g269, g_g267_g270;
-    return ((((g_g267_g270 = sub_g266), ((x_g269 = (g_g267_g270[1])), ((__g268 = (g_g267_g270[0])), x_g269)))))
-}), (chain((one_of(("\\"))), (por((transform((function  () {
-    return ((("\n")))
-}), (one_of(("n"))))), (transform((function  () {
-    return ((("\t")))
-}), (one_of(("t"))))), (one_of(("\\\"|"))))))))))
+var read_list = ((function  () {
+    return ((many_delimited((pthunk((function  () {
+    return ((dotted_expression))
+}))), (")"))))
 })());
-var string = ((function  () {
+var read_bracket_list = ((function  () {
     return ((transform((function  (xs) {
-    return (((list(("'"), (apply(str, xs))))))
-}), (between((one_of(("\""))), (one_of(("\""))), (many((por(escaped, (none_of(("\\\""))))))))))))
+    return (((cat((list("[")), xs))))
+}), (many_delimited((pthunk((function  () {
+    return ((dotted_expression))
+}))), ("]"))))))
 })());
-var piped_symbol = ((function  () {
+var string_part = ((function  () {
+    return ((function string_part (delimeter) {
+    return (((function  (xs, i) {
+    var g_g260_g264, g_g263_g265, xs_g261_g266, _g262_g267, end_g268;
+    return (((((g_g260_g264 = ((xs[i]) === ("\\"))), (((alist(g_g260_g264)) && ((g_g260_g264.length) === 0)) ? false : ((g_g260_g264 === 0) ? true : g_g260_g264))) ? (read_escaped(xs, i)) : ((end_g268 = ((_g262_g267 = i), ((xs_g261_g266 = xs), ((function () {while (((_g262_g267 < (xs_g261_g266.length)) && (((g_g263_g265 = (some((xs_g261_g266[_g262_g267]), (list(("\\"), delimeter))))), (((alist(g_g263_g265)) && ((g_g263_g265.length) === 0)) ? false : ((g_g263_g265 === 0) ? true : g_g263_g265))) ? false : true))) {
+    (++_g262_g267);
+}}()), _g262_g267)))), (list(false, ((xs.substring)(i, end_g268)), end_g268))))))
+})))
+}))
+})());
+var read_piped_symbol = ((function  () {
     return ((transform((function  (xs) {
     return (((apply(str, xs))))
-}), (between((one_of(("|"))), (one_of(("|"))), (many((por(escaped, (none_of(("\\|"))))))))))))
+}), (many_delimited((string_part(("|"))), ("|"))))))
 })());
-var number = ((function  () {
-    return ((transform((function  (sub_g271) {
-    var g_g274_g283, g_g276_g284, g_g275_g285, g_g273_g286, g_g278_g287, g_g280_g288, g_g279_g289, g_g277_g290, sign_g291, a_g292, b_g293, g_g272_g294;
-    return ((((g_g272_g294 = sub_g271), ((b_g293 = (g_g272_g294[2])), ((a_g292 = (g_g272_g294[1])), ((sign_g291 = (g_g272_g294[0])), (sign_g291 = ((g_g273_g286 = sign_g291), (((g_g274_g283 = g_g273_g286), (((alist(g_g274_g283)) && ((g_g274_g283.length) === 0)) ? false : ((g_g274_g283 === 0) ? true : g_g274_g283))) ? g_g273_g286 : ((g_g275_g285 = ("+")), (((g_g276_g284 = g_g275_g285), (((alist(g_g276_g284)) && ((g_g276_g284.length) === 0)) ? false : ((g_g276_g284 === 0) ? true : g_g276_g284))) ? g_g275_g285 : null))))), (b_g293 = ((g_g277_g290 = b_g293), (((g_g278_g287 = g_g277_g290), (((alist(g_g278_g287)) && ((g_g278_g287.length) === 0)) ? false : ((g_g278_g287 === 0) ? true : g_g278_g287))) ? g_g277_g290 : ((g_g279_g289 = ("")), (((g_g280_g288 = g_g279_g289), (((alist(g_g280_g288)) && ((g_g280_g288.length) === 0)) ? false : ((g_g280_g288 === 0) ? true : g_g280_g288))) ? g_g279_g289 : null))))), (+(str(sign_g291, (apply(str, a_g292)), b_g293)))))))))
-}), (chain((optional((one_of(("+-"))))), (many1(digit)), (optional((transform((function  (sub_g281) {
-    var dot_g295, digits_g296, g_g282_g297;
-    return ((((g_g282_g297 = sub_g281), ((digits_g296 = (g_g282_g297[1])), ((dot_g295 = (g_g282_g297[0])), (apply(str, dot_g295, digits_g296)))))))
-}), (chain((one_of(("."))), (many(digit)))))))))))))
+var read_string = ((function  () {
+    return ((transform((function  (xs) {
+    return (((list(("'"), (apply(str, xs))))))
+}), (many_delimited((string_part(("\""))), ("\""))))))
 })());
-var modifer = ((function  () {
-    return ((function modifer (s) {
-    return (((por((chain((pstr(s)), (pthunk((function  () {
-    return ((expression2))
-}))))), (pstr(s))))))
+var read_modifer = ((function  () {
+    return ((function read_modifer (xs, i) {
+    var g_g269_g273, g_g270_g274, g_g272_g275, err_g276, res_g277, i_g278, g_g271_g279, modifer_g280, end_g281;
+    return ((((end_g281 = (i + (((g_g269_g273 = ((xs[(i + 1)]) === ("@"))), (((alist(g_g269_g273)) && ((g_g269_g273.length) === 0)) ? false : ((g_g269_g273 === 0) ? true : g_g269_g273))) ? 2 : 1))), ((modifer_g280 = ((xs.substring)(i, end_g281))), ((((g_g270_g274 = (some((xs[end_g281]), (str(seps, (")]")))))), (((alist(g_g270_g274)) && ((g_g270_g274.length) === 0)) ? false : ((g_g270_g274 === 0) ? true : g_g270_g274))) ? (list(false, modifer_g280, end_g281)) : ((g_g271_g279 = (dotted_expression(xs, end_g281))), ((i_g278 = (g_g271_g279[2])), ((res_g277 = (g_g271_g279[1])), ((err_g276 = (g_g271_g279[0])), (((g_g272_g275 = err_g276), (((alist(g_g272_g275)) && ((g_g272_g275.length) === 0)) ? false : ((g_g272_g275 === 0) ? true : g_g272_g275))) ? (list(err_g276)) : (list(false, (list(modifer_g280, res_g277)), i_g278)))))))))))))
 }))
 })());
 var expression = ((function  () {
-    return ((apply(por, number, symbol, string, (pthunk((function  () {
-    return ((plist))
-}))), (pthunk((function  () {
-    return ((bracket_list))
-}))), piped_symbol, (map((function  (_) {
-    return (((modifer(_))))
-}), (["'","`",",@",","]))))))
-})());
-var expression2 = ((function  () {
-    return ((transform((function  (xs) {
-    var g_g298_g299;
-    return (((((g_g298_g299 = ((xs.length) === 1)), (((alist(g_g298_g299)) && ((g_g298_g299.length) === 0)) ? false : ((g_g298_g299 === 0) ? true : g_g298_g299))) ? (xs[0]) : (cat((list(".")), xs)))))
-}), (sep_by1(expression, (one_of(("."))))))))
+    return ((function expression (xs, i) {
+    var g_g283_g291, g_g284_g292, g_g285_g293, g_g286_g294, g_g287_g295, g_g288_g296, g_g289_g297, g_g290_g298, g_g282_g299, c_g300;
+    return ((((c_g300 = (xs[i])), (((g_g282_g299 = c_g300), (((g_g283_g291 = (g_g282_g299 === ("\""))), (((alist(g_g283_g291)) && ((g_g283_g291.length) === 0)) ? false : ((g_g283_g291 === 0) ? true : g_g283_g291))) ? read_string : (((g_g284_g292 = (g_g282_g299 === ("|"))), (((alist(g_g284_g292)) && ((g_g284_g292.length) === 0)) ? false : ((g_g284_g292 === 0) ? true : g_g284_g292))) ? read_piped_symbol : (((g_g285_g293 = (g_g282_g299 === ("("))), (((alist(g_g285_g293)) && ((g_g285_g293.length) === 0)) ? false : ((g_g285_g293 === 0) ? true : g_g285_g293))) ? read_list : (((g_g286_g294 = (g_g282_g299 === ("["))), (((alist(g_g286_g294)) && ((g_g286_g294.length) === 0)) ? false : ((g_g286_g294 === 0) ? true : g_g286_g294))) ? read_bracket_list : (((g_g287_g295 = (adigit(c_g300))), (((alist(g_g287_g295)) && ((g_g287_g295.length) === 0)) ? false : ((g_g287_g295 === 0) ? true : g_g287_g295))) ? read_number : (((g_g288_g296 = (some(c_g300, ("+-")))), (((alist(g_g288_g296)) && ((g_g288_g296.length) === 0)) ? false : ((g_g288_g296 === 0) ? true : g_g288_g296))) ? symbol$snumber : (((g_g289_g297 = ((asymbol_char(c_g300)) || ((".") === c_g300))), (((alist(g_g289_g297)) && ((g_g289_g297.length) === 0)) ? false : ((g_g289_g297 === 0) ? true : g_g289_g297))) ? read_symbol : (((g_g290_g298 = (some(c_g300, ("`',")))), (((alist(g_g290_g298)) && ((g_g290_g298.length) === 0)) ? false : ((g_g290_g298 === 0) ? true : g_g290_g298))) ? read_modifer : (function  (xs, i) {
+    return (((make_error(xs, i, (["unexpected","char"])))))
+}))))))))))(xs, i)))))
+}))
 })());
 var sep = ((function  () {
-    return ((many((one_of(("\n\t "))))))
+    return ((function sep (xs, i) {
+    var xs_g301_g303, _g302_g304;
+    return ((((_g302_g304 = i), ((xs_g301_g303 = xs), ((function () {while (((_g302_g304 < (xs_g301_g303.length)) && (some((xs_g301_g303[_g302_g304]), seps)))) {
+    (++_g302_g304);
+}}()), _g302_g304)))))
+}))
 })());
-var expressions = ((function  () {
-    return ((start_sep_end(expression2, sep)))
+var second_expression = ((function  () {
+    return ((function second_expression (xs, i, front) {
+    var g_g306_g311, g_g308_g312, g_g309_g313, g_g307_g314, g_g310_g315, bla_g316, err_g317, back_g318, end_g319, g_g305_g320;
+    return ((((g_g305_g320 = (expression(xs, (i + 1)))), ((end_g319 = (g_g305_g320[2])), ((back_g318 = (g_g305_g320[1])), ((err_g317 = (g_g305_g320[0])), (((g_g306_g311 = err_g317), (((alist(g_g306_g311)) && ((g_g306_g311.length) === 0)) ? false : ((g_g306_g311 === 0) ? true : g_g306_g311))) ? (list(err_g317)) : ((bla_g316 = (list(((g_g307_g314 = (xs[i])), (((g_g308_g312 = (g_g307_g314 === ("."))), (((alist(g_g308_g312)) && ((g_g308_g312.length) === 0)) ? false : ((g_g308_g312 === 0) ? true : g_g308_g312))) ? (".") : (((g_g309_g313 = (g_g307_g314 === (":"))), (((alist(g_g309_g313)) && ((g_g309_g313.length) === 0)) ? false : ((g_g309_g313 === 0) ? true : g_g309_g313))) ? ("get") : null))), front, back_g318))), (((g_g310_g315 = (some((xs[end_g319]), (".:")))), (((alist(g_g310_g315)) && ((g_g310_g315.length) === 0)) ? false : ((g_g310_g315 === 0) ? true : g_g310_g315))) ? (second_expression(xs, end_g319, bla_g316)) : (list(false, bla_g316, (sep(xs, end_g319)))))))))))))
+}))
 })());
-var plist = ((function  () {
-    return ((between((one_of(("("))), (one_of((")"))), expressions)))
+var dotted_expression = ((function  () {
+    return ((function dotted_expression (xs, i) {
+    var g_g322_g324, g_g323_g325, err_g326, front_g327, i_g328, g_g321_g329;
+    return (((i = (sep(xs, i))), ((g_g321_g329 = (expression(xs, i))), ((i_g328 = (g_g321_g329[2])), ((front_g327 = (g_g321_g329[1])), ((err_g326 = (g_g321_g329[0])), (((g_g322_g324 = err_g326), (((alist(g_g322_g324)) && ((g_g322_g324.length) === 0)) ? false : ((g_g322_g324 === 0) ? true : g_g322_g324))) ? (list(err_g326)) : (((g_g323_g325 = (some((xs[i_g328]), (".:")))), (((alist(g_g323_g325)) && ((g_g323_g325.length) === 0)) ? false : ((g_g323_g325 === 0) ? true : g_g323_g325))) ? (second_expression(xs, i_g328, front_g327)) : (list(false, front_g327, (sep(xs, i_g328))))))))))))
+}))
 })());
-var bracket_list = ((function  () {
-    return ((transform((function  (xs) {
-    return (((cat((list("[")), xs))))
-}), (between((one_of(("["))), (one_of(("]"))), expressions)))))
+var read_file = ((function  () {
+    return ((function  (xs, i) {
+    return ((((many_delimited(dotted_expression, undefined))(xs, (i - 1)))))
+}))
 })());
 var pfile = ((function  () {
-    return ((transform((function  (sub_g300) {
-    var file_g302, __g303, g_g301_g304;
-    return ((((g_g301_g304 = sub_g300), ((__g303 = (g_g301_g304[1])), ((file_g302 = (g_g301_g304[0])), file_g302)))))
-}), (chain(expressions, eof)))))
+    return ((function pfile (xs, i) {
+    var err_g331, res_g332, i_g333, g_g330_g334;
+    return ((((g_g330_g334 = (read_file(xs, i))), ((i_g333 = (g_g330_g334[2])), ((res_g332 = (g_g330_g334[1])), ((err_g331 = (g_g330_g334[0])), (err_g331 || (list(res_g332, i_g333)))))))))
+}))
 })());
 var gensym_counter = ((function  () {
     return (0)
 })());
 var gensym = ((function  () {
     return ((function gensym (prefix) {
-    var g_g305_g306;
-    return ((((g_g305_g306 = (str((prefix || ("")), ("_g"), gensym_counter))), (++gensym_counter), g_g305_g306)))
+    var g_g335_g336;
+    return ((((g_g335_g336 = (str((prefix || ("")), ("_g"), gensym_counter))), (++gensym_counter), g_g335_g336)))
 }))
 })());
 var reps = ((function  () {
@@ -487,44 +418,44 @@ var wholereps = ((function  () {
 })());
 var munge = ((function  () {
     return ((function munge (x) {
-    var g_g307_g308;
-    return (((((g_g307_g308 = ((!((astr(x)))) || ((x[0]) === ("\"")))), (((alist(g_g307_g308)) && ((g_g307_g308.length) === 0)) ? false : ((g_g307_g308 === 0) ? true : g_g307_g308))) ? x : ((wholereps[x]) || (join((map((function  (_) {
+    var g_g337_g338;
+    return (((((g_g337_g338 = ((!((astr(x)))) || ((x[0]) === ("\"")))), (((alist(g_g337_g338)) && ((g_g337_g338.length) === 0)) ? false : ((g_g337_g338 === 0) ? true : g_g337_g338))) ? x : ((wholereps[x]) || (join((map((function  (_) {
     return ((((reps[_]) || _)))
 }), x)), ("")))))))
 }))
 })());
 var letmac = ((function  () {
     return ((function letmac (name, val) {
-    var g_g310_g318, g_g311_g319, g_g312_g320, g_g315_g321, g_g316_g322, i_g323, g_g317_g324, i_g325, g_g326, rest_g327, before_g328, rest_g329, after_g330, g_g314_g331, g_g313_g332, offset_g333, body_g334, g_g309_g335;
-    return (((g_g309_g335 = arguments), ((body_g334 = (slice(g_g309_g335, 2, ((g_g309_g335.length) - 0)))), (((g_g310_g318 = (alist(name))), (((alist(g_g310_g318)) && ((g_g310_g318.length) === 0)) ? false : ((g_g310_g318 === 0) ? true : g_g310_g318))) ? ((offset_g333 = (((g_g311_g319 = (anumber((first(name))))), (((alist(g_g311_g319)) && ((g_g311_g319.length) === 0)) ? false : ((g_g311_g319 === 0) ? true : g_g311_g319))) ? ((g_g312_g320 = (first(name))), (name = (slice(name, 1))), g_g312_g320) : 0)), ((g_g313_g332 = (split_by((function  (_) {
+    var g_g340_g350, g_g341_g351, g_g342_g352, g_g345_g353, g_g346_g354, before_g347_g355, i_g356, g_g348_g357, after_g349_g358, i_g359, g_g360, rest_g361, before_g362, rest_g363, after_g364, g_g344_g365, g_g343_g366, offset_g367, body_g368, g_g339_g369;
+    return (((g_g339_g369 = arguments), ((body_g368 = (slice(g_g339_g369, 2, ((g_g339_g369.length) - 0)))), (((g_g340_g350 = (alist(name))), (((alist(g_g340_g350)) && ((g_g340_g350.length) === 0)) ? false : ((g_g340_g350 === 0) ? true : g_g340_g350))) ? ((offset_g367 = (((g_g341_g351 = (anumber((first(name))))), (((alist(g_g341_g351)) && ((g_g341_g351.length) === 0)) ? false : ((g_g341_g351 === 0) ? true : g_g341_g351))) ? ((g_g342_g352 = (first(name))), (name = (slice(name, 1))), g_g342_g352) : 0)), ((g_g343_g366 = (split_by((function  (_) {
     return ((((alist(_)) && ((_[0]) === ("'")))))
-}), name))), ((g_g314_g331 = (g_g313_g332[1])), ((after_g330 = (slice(g_g314_g331, 1, ((g_g314_g331.length) - 0)))), ((rest_g329 = (g_g314_g331[0])), ((before_g328 = (g_g313_g332[0])), ((rest_g327 = (((g_g315_g321 = rest_g329), (((alist(g_g315_g321)) && ((g_g315_g321.length) === 0)) ? false : ((g_g315_g321 === 0) ? true : g_g315_g321))) ? (second(rest_g329)) : false)), ((((g_g316_g322 = ((name.length) === 0)), (((alist(g_g316_g322)) && ((g_g316_g322.length) === 0)) ? false : ((g_g316_g322 === 0) ? true : g_g316_g322))) ? (cat((list("do")), body_g334)) : ((g_g326 = (gensym(("g")))), (((i_g323 = 0), (function () {while (((i_g323 < (before_g328.length)) && true)) {
-    (body_g334 = (list((cat((list("let")), (list((before_g328[i_g323]))), (list((list("get", g_g326, (offset_g333 + i_g323))))), body_g334))))), (++i_g323);
-}}())), (((g_g317_g324 = rest_g327), (((alist(g_g317_g324)) && ((g_g317_g324.length) === 0)) ? false : ((g_g317_g324 === 0) ? true : g_g317_g324))) ? ((body_g334 = (list((cat((list("let")), (list(rest_g327)), (list((list("slice", g_g326, (offset_g333 + (before_g328.length)), (list("-", (list(".", g_g326, "length")), (after_g330.length))))))), body_g334))))), ((i_g325 = 0), (function () {while (((i_g325 < (after_g330.length)) && true)) {
-    (body_g334 = (list((cat((list("let")), (list((after_g330[i_g325]))), (list((list("get", g_g326, (list("-", (list(".", g_g326, "length")), ((after_g330.length) - i_g325))))))), body_g334))))), (++i_g325);
-}}()))) : null), (cat((list("let")), (list(g_g326)), (list(val)), body_g334))))))))))))) : (cat((list("rawlet")), (list(name)), (list(val)), body_g334))))))
+}), name))), ((g_g344_g365 = (g_g343_g366[1])), ((after_g364 = (slice(g_g344_g365, 1, ((g_g344_g365.length) - 0)))), ((rest_g363 = (g_g344_g365[0])), ((before_g362 = (g_g343_g366[0])), ((rest_g361 = (((g_g345_g353 = rest_g363), (((alist(g_g345_g353)) && ((g_g345_g353.length) === 0)) ? false : ((g_g345_g353 === 0) ? true : g_g345_g353))) ? (second(rest_g363)) : false)), ((((g_g346_g354 = ((name.length) === 0)), (((alist(g_g346_g354)) && ((g_g346_g354.length) === 0)) ? false : ((g_g346_g354 === 0) ? true : g_g346_g354))) ? (cat((list("do")), body_g368)) : ((g_g360 = (gensym(("g")))), (((i_g356 = 0), ((before_g347_g355 = before_g362), ((function () {while (((i_g356 < (before_g347_g355.length)) && true)) {
+    (body_g368 = (list((cat((list("let")), (list((before_g347_g355[i_g356]))), (list((list("get", g_g360, (offset_g367 + i_g356))))), body_g368))))), (++i_g356);
+}}()), i_g356))), (((g_g348_g357 = rest_g361), (((alist(g_g348_g357)) && ((g_g348_g357.length) === 0)) ? false : ((g_g348_g357 === 0) ? true : g_g348_g357))) ? ((body_g368 = (list((cat((list("let")), (list(rest_g361)), (list((list("slice", g_g360, (offset_g367 + (before_g362.length)), (list("-", (list(".", g_g360, "length")), (after_g364.length))))))), body_g368))))), ((i_g359 = 0), ((after_g349_g358 = after_g364), ((function () {while (((i_g359 < (after_g349_g358.length)) && true)) {
+    (body_g368 = (list((cat((list("let")), (list((after_g349_g358[i_g359]))), (list((list("get", g_g360, (list("-", (list(".", g_g360, "length")), ((after_g364.length) - i_g359))))))), body_g368))))), (++i_g359);
+}}()), i_g359)))) : null), (cat((list("let")), (list(g_g360)), (list(val)), body_g368))))))))))))) : (cat((list("rawlet")), (list(name)), (list(val)), body_g368))))))
 }))
 })());
 var fun = ((function  () {
     return ((function fun (name, args) {
-    var g_g339_g340, sub_g341, _g338_g342, before_g343, restnafter_g344, g_g337_g345, body_g346, g_g336_g347;
-    return (((g_g336_g347 = arguments), ((body_g346 = (slice(g_g336_g347, 2, ((g_g336_g347.length) - 0)))), ((g_g337_g345 = (split_by((function  (_) {
+    var g_g374_g375, sub_g376, before_g372_g377, _g373_g378, before_g379, restnafter_g380, g_g371_g381, body_g382, g_g370_g383;
+    return (((g_g370_g383 = arguments), ((body_g382 = (slice(g_g370_g383, 2, ((g_g370_g383.length) - 0)))), ((g_g371_g381 = (split_by((function  (_) {
     return ((((alist(_)) && ((_[0]) === ("'")))))
-}), args))), ((restnafter_g344 = (g_g337_g345[1])), ((before_g343 = (g_g337_g345[0])), ((_g338_g342 = 0), (function () {while (((_g338_g342 < (before_g343.length)) && true)) {
-    (((g_g339_g340 = (alist((before_g343[_g338_g342])))), (((alist(g_g339_g340)) && ((g_g339_g340.length) === 0)) ? false : ((g_g339_g340 === 0) ? true : g_g339_g340))) ? (((sub_g341 = (gensym(("sub")))), ((body_g346 = (list((cat((list("let")), (list((before_g343[_g338_g342]))), (list(sub_g341)), body_g346))))), ((before_g343[_g338_g342]) = sub_g341)))) : null), (++_g338_g342);
-}}())), (list("rawfun", name, before_g343, (cat((list("let")), (list((cat((list((before_g343.length))), restnafter_g344)))), (list("arguments")), body_g346))))))))))
+}), args))), ((restnafter_g380 = (g_g371_g381[1])), ((before_g379 = (g_g371_g381[0])), ((_g373_g378 = 0), ((before_g372_g377 = before_g379), ((function () {while (((_g373_g378 < (before_g372_g377.length)) && true)) {
+    (((g_g374_g375 = (alist((before_g372_g377[_g373_g378])))), (((alist(g_g374_g375)) && ((g_g374_g375.length) === 0)) ? false : ((g_g374_g375 === 0) ? true : g_g374_g375))) ? (((sub_g376 = (gensym(("sub")))), ((body_g382 = (list((cat((list("let")), (list((before_g372_g377[_g373_g378]))), (list(sub_g376)), body_g382))))), ((before_g372_g377[_g373_g378]) = sub_g376)))) : null), (++_g373_g378);
+}}()), _g373_g378))), (list("rawfun", name, before_g379, (cat((list("let")), (list((cat((list((before_g379.length))), restnafter_g380)))), (list("arguments")), body_g382))))))))))
 }))
 })());
 var asbool = ((function  () {
     return ((function asbool (x) {
-    var g_g348;
-    return ((((g_g348 = (gensym(("g")))), ((list("let", g_g348, x, (list("rawif", (list("and", (list("alist", g_g348)), (list("is", (list(".", g_g348, "length")), 0)))), "false", (list("rawif", (list("is", g_g348, 0)), "true", g_g348))))))))))
+    var g_g384;
+    return ((((g_g384 = (gensym(("g")))), ((list("let", g_g384, x, (list("rawif", (list("and", (list("alist", g_g384)), (list("is", (list(".", g_g384, "length")), 0)))), "false", (list("rawif", (list("is", g_g384, 0)), "true", g_g384))))))))))
 }))
 })());
 var ifmac = ((function  () {
     return ((function ifmac (cond, then) {
-    var g_g350_g352, g_g351_g353, rest_g354, g_g349_g355;
-    return (((g_g349_g355 = arguments), ((rest_g354 = (slice(g_g349_g355, 2, ((g_g349_g355.length) - 0)))), (list("rawif", (asbool(cond)), then, (((g_g350_g352 = ((rest_g354.length) === 0)), (((alist(g_g350_g352)) && ((g_g350_g352.length) === 0)) ? false : ((g_g350_g352 === 0) ? true : g_g350_g352))) ? null : (((g_g351_g353 = ((rest_g354.length) === 1)), (((alist(g_g351_g353)) && ((g_g351_g353.length) === 0)) ? false : ((g_g351_g353 === 0) ? true : g_g351_g353))) ? (rest_g354[0]) : (cat((list("if")), rest_g354)))))))))
+    var g_g386_g388, g_g387_g389, rest_g390, g_g385_g391;
+    return (((g_g385_g391 = arguments), ((rest_g390 = (slice(g_g385_g391, 2, ((g_g385_g391.length) - 0)))), (list("rawif", (asbool(cond)), then, (((g_g386_g388 = ((rest_g390.length) === 0)), (((alist(g_g386_g388)) && ((g_g386_g388.length) === 0)) ? false : ((g_g386_g388 === 0) ? true : g_g386_g388))) ? null : (((g_g387_g389 = ((rest_g390.length) === 1)), (((alist(g_g387_g389)) && ((g_g387_g389.length) === 0)) ? false : ((g_g387_g389 === 0) ? true : g_g387_g389))) ? (rest_g390[0]) : (cat((list("if")), rest_g390)))))))))
 }))
 })());
 var macs = ((function  () {
@@ -532,14 +463,14 @@ var macs = ((function  () {
 })());
 var commaop = ((function  () {
     return ((function commaop () {
-    var code_g357, g_g356_g358;
-    return (((g_g356_g358 = arguments), ((code_g357 = (slice(g_g356_g358, 0, ((g_g356_g358.length) - 0)))), (join((map(rendex, code_g357)), (", "))))))
+    var code_g393, g_g392_g394;
+    return (((g_g392_g394 = arguments), ((code_g393 = (slice(g_g392_g394, 0, ((g_g392_g394.length) - 0)))), (join((map(rendex, code_g393)), (", "))))))
 }))
 })());
 var delet = ((function  () {
     return ((function delet (code) {
-    var g_g359_g364, g_g360_g365, sub_g366, vars_g367, name_g368, val_g369, body_g370, g_g362_g371, g_g361_g372, g_g363_g373, foo_g374;
-    return (((((g_g359_g364 = (alist(code))), (((alist(g_g359_g364)) && ((g_g359_g364.length) === 0)) ? false : ((g_g359_g364 === 0) ? true : g_g359_g364))) ? (((g_g360_g365 = ((code[0]) === ("rawlet"))), (((alist(g_g360_g365)) && ((g_g360_g365.length) === 0)) ? false : ((g_g360_g365 === 0) ? true : g_g360_g365))) ? ((g_g361_g372 = (delet((slice(code, 1))))), ((g_g362_g371 = (g_g361_g372[1])), ((body_g370 = (slice(g_g362_g371, 2, ((g_g362_g371.length) - 0)))), ((val_g369 = (g_g362_g371[1])), ((name_g368 = (g_g362_g371[0])), ((vars_g367 = (g_g361_g372[0])), ((sub_g366 = (gensym(name_g368))), ((list((cat(vars_g367, (list(sub_g366)))), (cat((list("do")), (list((list("=", sub_g366, val_g369)))), (subsname(name_g368, sub_g366, body_g370)))))))))))))) : (((g_g363_g373 = ((code[0]) === ("rawfun"))), (((alist(g_g363_g373)) && ((g_g363_g373.length) === 0)) ? false : ((g_g363_g373 === 0) ? true : g_g363_g373))) ? (list([], code)) : ((foo_g374 = (map(delet, code))), (list((mapcat(first, foo_g374)), (map(second, foo_g374))))))) : (list([], code)))))
+    var g_g395_g400, g_g396_g401, sub_g402, vars_g403, name_g404, val_g405, body_g406, g_g398_g407, g_g397_g408, g_g399_g409, foo_g410;
+    return (((((g_g395_g400 = (alist(code))), (((alist(g_g395_g400)) && ((g_g395_g400.length) === 0)) ? false : ((g_g395_g400 === 0) ? true : g_g395_g400))) ? (((g_g396_g401 = ((code[0]) === ("rawlet"))), (((alist(g_g396_g401)) && ((g_g396_g401.length) === 0)) ? false : ((g_g396_g401 === 0) ? true : g_g396_g401))) ? ((g_g397_g408 = (delet((slice(code, 1))))), ((g_g398_g407 = (g_g397_g408[1])), ((body_g406 = (slice(g_g398_g407, 2, ((g_g398_g407.length) - 0)))), ((val_g405 = (g_g398_g407[1])), ((name_g404 = (g_g398_g407[0])), ((vars_g403 = (g_g397_g408[0])), ((sub_g402 = (gensym(name_g404))), ((list((cat(vars_g403, (list(sub_g402)))), (cat((list("do")), (list((list("=", sub_g402, val_g405)))), (subsname(name_g404, sub_g402, body_g406)))))))))))))) : (((g_g399_g409 = ((code[0]) === ("rawfun"))), (((alist(g_g399_g409)) && ((g_g399_g409.length) === 0)) ? false : ((g_g399_g409 === 0) ? true : g_g399_g409))) ? (list([], code)) : ((foo_g410 = (map(delet, code))), (list((mapcat(first, foo_g410)), (map(second, foo_g410))))))) : (list([], code)))))
 }))
 })());
 var rawif = ((function  () {
@@ -549,14 +480,14 @@ var rawif = ((function  () {
 })());
 var rawwhile = ((function  () {
     return ((function rawwhile (cond) {
-    var body_g376, g_g375_g377;
-    return (((g_g375_g377 = arguments), ((body_g376 = (slice(g_g375_g377, 1, ((g_g375_g377.length) - 0)))), (str(("function () {while ("), (rendex(cond)), (") {\n    "), (apply(commaop, body_g376)), (";\n}}()"))))))
+    var body_g412, g_g411_g413;
+    return (((g_g411_g413 = arguments), ((body_g412 = (slice(g_g411_g413, 1, ((g_g411_g413.length) - 0)))), (str(("function () {while ("), (rendex(cond)), (") {\n    "), (apply(commaop, body_g412)), (";\n}}()"))))))
 }))
 })());
 var rawcatch = ((function  () {
     return ((function rawcatch (name, form) {
-    var body_g379, g_g378_g380;
-    return (((g_g378_g380 = arguments), ((body_g379 = (slice(g_g378_g380, 2, ((g_g378_g380.length) - 0)))), (str(("function () {try{\n    return "), (rendex(form)), ("} catch ("), (rendex(name)), (") {\n    return "), (apply(commaop, body_g379)), (";\n}}()"))))))
+    var body_g415, g_g414_g416;
+    return (((g_g414_g416 = arguments), ((body_g415 = (slice(g_g414_g416, 2, ((g_g414_g416.length) - 0)))), (str(("function () {try{\n    return "), (rendex(form)), ("} catch ("), (rendex(name)), (") {\n    return "), (apply(commaop, body_g415)), (";\n}}()"))))))
 }))
 })());
 var funcall = ((function  () {
@@ -586,41 +517,41 @@ var r_asnumber = ((function  () {
 })());
 var rawfun = ((function  () {
     return ((function rawfun (name, args) {
-    var g_g383_g384, names_g385, body_g386, g_g382_g387, body_g388, g_g381_g389;
-    return (((g_g381_g389 = arguments), ((body_g388 = (slice(g_g381_g389, 2, ((g_g381_g389.length) - 0)))), ((g_g382_g387 = (delet((cat((["do"]), body_g388))))), ((body_g386 = (g_g382_g387[1])), ((names_g385 = (g_g382_g387[0])), (str(("function "), (munge(name)), (" ("), (apply(commaop, args)), (") {\n"), (((g_g383_g384 = ((names_g385.length) === 0)), (((alist(g_g383_g384)) && ((g_g383_g384.length) === 0)) ? false : ((g_g383_g384 === 0) ? true : g_g383_g384))) ? ("") : (str(("    var "), (apply(commaop, names_g385)), (";\n")))), ("    return "), (rendex(body_g386)), ("\n}")))))))))
+    var g_g419_g420, names_g421, body_g422, g_g418_g423, body_g424, g_g417_g425;
+    return (((g_g417_g425 = arguments), ((body_g424 = (slice(g_g417_g425, 2, ((g_g417_g425.length) - 0)))), ((g_g418_g423 = (delet((cat((["do"]), body_g424))))), ((body_g422 = (g_g418_g423[1])), ((names_g421 = (g_g418_g423[0])), (str(("function "), (munge(name)), (" ("), (apply(commaop, args)), (") {\n"), (((g_g419_g420 = ((names_g421.length) === 0)), (((alist(g_g419_g420)) && ((g_g419_g420.length) === 0)) ? false : ((g_g419_g420 === 0) ? true : g_g419_g420))) ? ("") : (str(("    var "), (apply(commaop, names_g421)), (";\n")))), ("    return "), (rendex(body_g422)), ("\n}")))))))))
 }))
 })());
 var exprenderers = ((function  () {
     return ((list2obj((list((list(("get"), rawget)), (list(("rawfun"), rawfun)), (list(("'"), quote)), (list(("++"), pp)), (list(("while"), rawwhile)), (list(("rawif"), rawif)), (list(("do"), commaop)), (list(("asnumber"), r_asnumber)), (list(("catch"), rawcatch)))))))
 })());
 ((function  () {
-    return ((map((function  (sub_g390) {
-    var name_g394, op_g395, id_g396, g_g391_g397;
-    return ((((g_g391_g397 = sub_g390), ((id_g396 = (g_g391_g397[2])), ((op_g395 = (g_g391_g397[1])), ((name_g394 = (g_g391_g397[0])), ((exprenderers[name_g394]) = (function  () {
-    var g_g393_g398, xs_g399, g_g392_g400;
-    return (((g_g392_g400 = arguments), ((xs_g399 = (slice(g_g392_g400, 0, ((g_g392_g400.length) - 0)))), (((g_g393_g398 = ((xs_g399.length) === 0)), (((alist(g_g393_g398)) && ((g_g393_g398.length) === 0)) ? false : ((g_g393_g398 === 0) ? true : g_g393_g398))) ? id_g396 : (join((map(rendex, xs_g399)), op_g395))))))
+    return ((map((function  (sub_g426) {
+    var name_g430, op_g431, id_g432, g_g427_g433;
+    return ((((g_g427_g433 = sub_g426), ((id_g432 = (g_g427_g433[2])), ((op_g431 = (g_g427_g433[1])), ((name_g430 = (g_g427_g433[0])), ((exprenderers[name_g430]) = (function  () {
+    var g_g429_g434, xs_g435, g_g428_g436;
+    return (((g_g428_g436 = arguments), ((xs_g435 = (slice(g_g428_g436, 0, ((g_g428_g436.length) - 0)))), (((g_g429_g434 = ((xs_g435.length) === 0)), (((alist(g_g429_g434)) && ((g_g429_g434.length) === 0)) ? false : ((g_g429_g434 === 0) ? true : g_g429_g434))) ? id_g432 : (join((map(rendex, xs_g435)), op_g431))))))
 }))))))))
 }), ([[".",".","null"],["+"," + ",0],["%"," % ",0],["-"," - ",0],["/"," / ",1],["and"," && ","true"],["or"," || ","false"],["raw<"," < ","true"],["raw<="," <= ","true"],["="," = ","null"],["rawis"," === ","true"]]))))
 })());
 ((function  () {
-    return ((map((function  (sub_g401) {
-    var name_g406, op_g407, g_g402_g408;
-    return ((((g_g402_g408 = sub_g401), ((op_g407 = (g_g402_g408[1])), ((name_g406 = (g_g402_g408[0])), ((macs[name_g406]) = (function  () {
-    var g_g404_g409, g_g405_g410, g2_g411, g1_g412, xs_g413, g_g403_g414;
-    return (((g_g403_g414 = arguments), ((xs_g413 = (slice(g_g403_g414, 0, ((g_g403_g414.length) - 0)))), (((g_g404_g409 = ((xs_g413.length) < 2)), (((alist(g_g404_g409)) && ((g_g404_g409.length) === 0)) ? false : ((g_g404_g409 === 0) ? true : g_g404_g409))) ? true : (((g_g405_g410 = ((xs_g413.length) === 2)), (((alist(g_g405_g410)) && ((g_g405_g410.length) === 0)) ? false : ((g_g405_g410 === 0) ? true : g_g405_g410))) ? (list(op_g407, (xs_g413[0]), (xs_g413[1]))) : ((g1_g412 = (gensym(("g1")))), ((g2_g411 = (gensym(("g2")))), ((list("with", (list(g1_g412, (xs_g413[0]), g2_g411, (xs_g413[1]))), (list("and", (list(op_g407, g1_g412, g2_g411)), (cat((list(name_g406)), (list(g2_g411)), (slice(xs_g413, 2))))))))))))))))
+    return ((map((function  (sub_g437) {
+    var name_g442, op_g443, g_g438_g444;
+    return ((((g_g438_g444 = sub_g437), ((op_g443 = (g_g438_g444[1])), ((name_g442 = (g_g438_g444[0])), ((macs[name_g442]) = (function  () {
+    var g_g440_g445, g_g441_g446, g2_g447, g1_g448, xs_g449, g_g439_g450;
+    return (((g_g439_g450 = arguments), ((xs_g449 = (slice(g_g439_g450, 0, ((g_g439_g450.length) - 0)))), (((g_g440_g445 = ((xs_g449.length) < 2)), (((alist(g_g440_g445)) && ((g_g440_g445.length) === 0)) ? false : ((g_g440_g445 === 0) ? true : g_g440_g445))) ? true : (((g_g441_g446 = ((xs_g449.length) === 2)), (((alist(g_g441_g446)) && ((g_g441_g446.length) === 0)) ? false : ((g_g441_g446 === 0) ? true : g_g441_g446))) ? (list(op_g443, (xs_g449[0]), (xs_g449[1]))) : ((g1_g448 = (gensym(("g1")))), ((g2_g447 = (gensym(("g2")))), ((list("with", (list(g1_g448, (xs_g449[0]), g2_g447, (xs_g449[1]))), (list("and", (list(op_g443, g1_g448, g2_g447)), (cat((list(name_g442)), (list(g2_g447)), (slice(xs_g449, 2))))))))))))))))
 })))))))
 }), ([["<","raw<"],["<=","raw<="],["is","rawis"]]))))
 })());
 var rendex = ((function  () {
     return ((function rendex (code) {
-    var g_g415_g420, g_g416_g421, g_g417_g422, it_g423, g_g418_g424, g_g419_g425;
-    return (((((g_g415_g420 = (alist(code))), (((alist(g_g415_g420)) && ((g_g415_g420.length) === 0)) ? false : ((g_g415_g420 === 0) ? true : g_g415_g420))) ? (((g_g416_g421 = ((code.length) === 0)), (((alist(g_g416_g421)) && ((g_g416_g421.length) === 0)) ? false : ((g_g416_g421 === 0) ? true : g_g416_g421))) ? ("[]") : (str(("("), ((it_g423 = (exprenderers[(code[0])])), (((g_g417_g422 = it_g423), (((alist(g_g417_g422)) && ((g_g417_g422.length) === 0)) ? false : ((g_g417_g422 === 0) ? true : g_g417_g422))) ? (apply(it_g423, (slice(code, 1)))) : (funcall((code[0]), (slice(code, 1)))))), (")")))) : (((g_g418_g424 = (code === null)), (((alist(g_g418_g424)) && ((g_g418_g424.length) === 0)) ? false : ((g_g418_g424 === 0) ? true : g_g418_g424))) ? ("null") : (((g_g419_g425 = (code === undefined)), (((alist(g_g419_g425)) && ((g_g419_g425.length) === 0)) ? false : ((g_g419_g425 === 0) ? true : g_g419_g425))) ? ("undefined") : (munge(code)))))))
+    var g_g451_g456, g_g452_g457, g_g453_g458, it_g459, g_g454_g460, g_g455_g461;
+    return (((((g_g451_g456 = (alist(code))), (((alist(g_g451_g456)) && ((g_g451_g456.length) === 0)) ? false : ((g_g451_g456 === 0) ? true : g_g451_g456))) ? (((g_g452_g457 = ((code.length) === 0)), (((alist(g_g452_g457)) && ((g_g452_g457.length) === 0)) ? false : ((g_g452_g457 === 0) ? true : g_g452_g457))) ? ("[]") : (str(("("), ((it_g459 = (exprenderers[(code[0])])), (((g_g453_g458 = it_g459), (((alist(g_g453_g458)) && ((g_g453_g458.length) === 0)) ? false : ((g_g453_g458 === 0) ? true : g_g453_g458))) ? (apply(it_g459, (slice(code, 1)))) : (funcall((code[0]), (slice(code, 1)))))), (")")))) : (((g_g454_g460 = (code === null)), (((alist(g_g454_g460)) && ((g_g454_g460.length) === 0)) ? false : ((g_g454_g460 === 0) ? true : g_g454_g460))) ? ("null") : (((g_g455_g461 = (code === undefined)), (((alist(g_g455_g461)) && ((g_g455_g461.length) === 0)) ? false : ((g_g455_g461 === 0) ? true : g_g455_g461))) ? ("undefined") : (munge(code)))))))
 }))
 })());
 var macex = ((function  () {
     return ((function macex (macs, code) {
-    var g_g426_g428, g_g427_g429, it_g430;
-    return (((((g_g426_g428 = ((alist(code)) && (code[0]) && (!(((code[0]) === ("'")))))), (((alist(g_g426_g428)) && ((g_g426_g428.length) === 0)) ? false : ((g_g426_g428 === 0) ? true : g_g426_g428))) ? (((code[0]) = (macex(macs, (code[0])))), ((it_g430 = (macs[(code[0])])), (((g_g427_g429 = it_g430), (((alist(g_g427_g429)) && ((g_g427_g429.length) === 0)) ? false : ((g_g427_g429 === 0) ? true : g_g427_g429))) ? (macex(macs, (apply(it_g430, (slice(code, 1)))))) : (map((function  (_) {
+    var g_g462_g464, g_g463_g465, it_g466;
+    return (((((g_g462_g464 = ((alist(code)) && (code[0]) && (!(((code[0]) === ("'")))))), (((alist(g_g462_g464)) && ((g_g462_g464.length) === 0)) ? false : ((g_g462_g464 === 0) ? true : g_g462_g464))) ? (((code[0]) = (macex(macs, (code[0])))), ((it_g466 = (macs[(code[0])])), (((g_g463_g465 = it_g466), (((alist(g_g463_g465)) && ((g_g463_g465.length) === 0)) ? false : ((g_g463_g465 === 0) ? true : g_g463_g465))) ? (macex(macs, (apply(it_g466, (slice(code, 1)))))) : (map((function  (_) {
     return (((macex(macs, _))))
 }), code))))) : code)))
 }))
@@ -635,32 +566,32 @@ var eval_with = ((function  () {
 })());
 var eval_form = ((function  () {
     return ((function eval_form (verb, arg, code) {
-    var g_g432_g435, g_g433_g436, g_g434_g437, g_g431_g438;
-    return (((((g_g431_g438 = verb), (((g_g432_g435 = (g_g431_g438 === ("assign"))), (((alist(g_g432_g435)) && ((g_g432_g435.length) === 0)) ? false : ((g_g432_g435 === 0) ? true : g_g432_g435))) ? (function  (_) {
+    var g_g468_g471, g_g469_g472, g_g470_g473, g_g467_g474;
+    return (((((g_g467_g474 = verb), (((g_g468_g471 = (g_g467_g474 === ("assign"))), (((alist(g_g468_g471)) && ((g_g468_g471.length) === 0)) ? false : ((g_g468_g471 === 0) ? true : g_g468_g471))) ? (function  (_) {
     return ((((env.push)((list((munge(arg)), _))))))
-}) : (((g_g433_g436 = (g_g431_g438 === ("assign-mac"))), (((alist(g_g433_g436)) && ((g_g433_g436.length) === 0)) ? false : ((g_g433_g436 === 0) ? true : g_g433_g436))) ? (function  (_) {
+}) : (((g_g469_g472 = (g_g467_g474 === ("assign-mac"))), (((alist(g_g469_g472)) && ((g_g469_g472.length) === 0)) ? false : ((g_g469_g472 === 0) ? true : g_g469_g472))) ? (function  (_) {
     return ((((macs[arg]) = _)))
-}) : (((g_g434_g437 = (g_g431_g438 === ("run"))), (((alist(g_g434_g437)) && ((g_g434_g437.length) === 0)) ? false : ((g_g434_g437 === 0) ? true : g_g434_g437))) ? idfn : null))))((eval_with((str(("return "), code)), env))))))
+}) : (((g_g470_g473 = (g_g467_g474 === ("run"))), (((alist(g_g470_g473)) && ((g_g470_g473.length) === 0)) ? false : ((g_g470_g473 === 0) ? true : g_g470_g473))) ? idfn : null))))((eval_with((str(("return "), code)), env))))))
 }))
 })());
 var only_compile_form = ((function  () {
     return ((function only_compile_form (verb, arg, code) {
-    var g_g440_g443, g_g441_g444, g_g442_g445, g_g439_g446;
-    return (((str((((g_g439_g446 = verb), (((g_g440_g443 = (g_g439_g446 === ("assign"))), (((alist(g_g440_g443)) && ((g_g440_g443.length) === 0)) ? false : ((g_g440_g443 === 0) ? true : g_g440_g443))) ? (function  (_) {
+    var g_g476_g479, g_g477_g480, g_g478_g481, g_g475_g482;
+    return (((str((((g_g475_g482 = verb), (((g_g476_g479 = (g_g475_g482 === ("assign"))), (((alist(g_g476_g479)) && ((g_g476_g479.length) === 0)) ? false : ((g_g476_g479 === 0) ? true : g_g476_g479))) ? (function  (_) {
     return (((str(("var "), (munge(arg)), (" = "), _))))
-}) : (((g_g441_g444 = (g_g439_g446 === ("assign-mac"))), (((alist(g_g441_g444)) && ((g_g441_g444.length) === 0)) ? false : ((g_g441_g444 === 0) ? true : g_g441_g444))) ? (JSON.stringify) : (((g_g442_g445 = (g_g439_g446 === ("run"))), (((alist(g_g442_g445)) && ((g_g442_g445.length) === 0)) ? false : ((g_g442_g445 === 0) ? true : g_g442_g445))) ? idfn : null))))(code)), (";\n")))))
+}) : (((g_g477_g480 = (g_g475_g482 === ("assign-mac"))), (((alist(g_g477_g480)) && ((g_g477_g480.length) === 0)) ? false : ((g_g477_g480 === 0) ? true : g_g477_g480))) ? (JSON.stringify) : (((g_g478_g481 = (g_g475_g482 === ("run"))), (((alist(g_g478_g481)) && ((g_g478_g481.length) === 0)) ? false : ((g_g478_g481 === 0) ? true : g_g478_g481))) ? idfn : null))))(code)), (";\n")))))
 }))
 })());
 var compile_helper = ((function  () {
     return ((function compile_helper (code) {
-    var g_g448_g449, jscode_g450, verb_g451, arg_g452, bar_g453, g_g447_g454, foo_g455;
-    return ((((foo_g455 = (macex(macs, code))), ((g_g447_g454 = (((g_g448_g449 = (some((foo_g455[0]), (["assign","assign-mac"])))), (((alist(g_g448_g449)) && ((g_g448_g449.length) === 0)) ? false : ((g_g448_g449 === 0) ? true : g_g448_g449))) ? foo_g455 : (list(("run"), null, foo_g455)))), ((bar_g453 = (g_g447_g454[2])), ((arg_g452 = (g_g447_g454[1])), ((verb_g451 = (g_g447_g454[0])), ((jscode_g450 = (rendex((list((list("rawfun", "", (list()), bar_g453))))))), ((list(verb_g451, arg_g452, jscode_g450)))))))))))
+    var g_g484_g485, jscode_g486, verb_g487, arg_g488, bar_g489, g_g483_g490, foo_g491;
+    return ((((foo_g491 = (macex(macs, code))), ((g_g483_g490 = (((g_g484_g485 = (some((foo_g491[0]), (["assign","assign-mac"])))), (((alist(g_g484_g485)) && ((g_g484_g485.length) === 0)) ? false : ((g_g484_g485 === 0) ? true : g_g484_g485))) ? foo_g491 : (list(("run"), null, foo_g491)))), ((bar_g489 = (g_g483_g490[2])), ((arg_g488 = (g_g483_g490[1])), ((verb_g487 = (g_g483_g490[0])), ((jscode_g486 = (rendex((list((list("rawfun", "", (list()), bar_g489))))))), ((list(verb_g487, arg_g488, jscode_g486)))))))))))
 }))
 })());
 var compile_form = ((function  () {
     return ((function compile_form (code) {
-    var g_g457_g458, g_g456_g459, foo_g460;
-    return ((((foo_g460 = (compile_helper(code))), (((g_g456_g459 = (((g_g457_g458 = ((foo_g460[0]) === ("run"))), (((alist(g_g457_g458)) && ((g_g457_g458.length) === 0)) ? false : ((g_g457_g458 === 0) ? true : g_g457_g458))) ? false : true)), (((alist(g_g456_g459)) && ((g_g456_g459.length) === 0)) ? false : ((g_g456_g459 === 0) ? true : g_g456_g459))) ? (apply(eval_form, foo_g460)) : null), (apply(only_compile_form, foo_g460)))))
+    var g_g493_g494, g_g492_g495, foo_g496;
+    return ((((foo_g496 = (compile_helper(code))), (((g_g492_g495 = (((g_g493_g494 = ((foo_g496[0]) === ("run"))), (((alist(g_g493_g494)) && ((g_g493_g494.length) === 0)) ? false : ((g_g493_g494 === 0) ? true : g_g493_g494))) ? false : true)), (((alist(g_g492_g495)) && ((g_g492_g495.length) === 0)) ? false : ((g_g492_g495 === 0) ? true : g_g492_g495))) ? (apply(eval_form, foo_g496)) : null), (apply(only_compile_form, foo_g496)))))
 }))
 })());
 var compile = ((function  () {
@@ -670,19 +601,20 @@ var compile = ((function  () {
 })());
 var cmd_handler = ((function  () {
     return ((function cmd_handler (xs) {
-    return (((join((first(((transform((function  (forms) {
+    var err_g498, res_g499, g_g497_g500;
+    return ((((g_g497_g500 = ((transform((function  (forms) {
     return (((map((function  (_) {
     return (((function () {try{
     return (sfy((apply(eval_form, (compile_helper(_))))))} catch (e) {
     return (str(e, ("\n"), (e.stack)));
 }}())))
 }), forms))))
-}), pfile))(xs, 0)))), (" ")))))
+}), read_file))(xs, 0))), ((res_g499 = (g_g497_g500[1])), ((err_g498 = (g_g497_g500[0])), (join((err_g498 || res_g499), (" "))))))))
 }))
 })());
 ((function  () {
     return ((((jQuery()).ready)((function  (_) {
-    var console_g461;
-    return ((((console_g461 = (jQuery(("#console")))), ((console_g461.console)((list2obj((list((list(("autofocus"), true)), (list(("commandHandle"), cmd_handler)), (list(("promptLabel"), ("¿ "))))))))), (compile(jasper_code)))))
+    var console_g501;
+    return ((((console_g501 = (jQuery(("#console")))), ((console_g501.console)((list2obj((list((list(("autofocus"), true)), (list(("commandHandle"), cmd_handler)), (list(("promptLabel"), ("¿ "))))))))), (compile(jasper_code)))))
 }))))
 })());
